@@ -16,7 +16,7 @@ func Logger(logger zerolog.Logger) func(http.Handler) http.Handler {
 
 			defer func() {
 				logger.Info().
-					// Str("request-id", GetReqID(r.Context())).
+					// Str("request-id", (r.Context().Value("request_id").(string) )).
 					Int("status", ww.Status()).
 					Int("bytes", ww.BytesWritten()).
 					Str("method", r.Method).
