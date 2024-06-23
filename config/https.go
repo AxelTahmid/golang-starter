@@ -6,22 +6,20 @@ import (
 	"github.com/kelseyhightower/envconfig"
 )
 
-const envPrefix = "API"
-
-type HTTPServer struct {
+type Api struct {
 	Name         string        `default:"go-api"`
 	Host         string        `default:"0.0.0.0"`
-	Port         int           `default:"8080"`
+	Port         int           `default:"3000"`
 	Logging      bool          `default:"true"`
 	IdleTimeout  time.Duration `split_words:"true" default:"60s"`
 	ReadTimeout  time.Duration `split_words:"true" default:"5s"`
 	WriteTimeout time.Duration `split_words:"true" default:"10s"`
 }
 
-func NewServer() HTTPServer {
-	var server HTTPServer
+func ServerConfig() Api {
+	var server Api
 
-	envconfig.MustProcess("API", &server)
+	envconfig.MustProcess("", &server)
 
 	return server
 }

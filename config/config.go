@@ -1,14 +1,14 @@
 package config
 
 type Config struct {
-	NewServer
+	Api
 	Cors
 }
 
 func New() *Config {
 
 	return &Config{
-		Api:           NewServer(),
-		Cors:          NewCors(),
+		Api:           ServerConfig(),
+		Cors:          CorsConfig(),
 	}
 }
