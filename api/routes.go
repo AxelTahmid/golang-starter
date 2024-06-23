@@ -1,16 +1,42 @@
 package api
 
 import (
-	"github.com/go-chi/chi/v5"
+	"os"
+
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
+	"github.com/rs/zerolog"
+	"github.com/unrolled/secure"
+
+	"github.com/AxelTahmid/golang-starter/api/middlewares"
 )
 
 func (s *Server) routes() {
+
+	// global middlewares
+	secureMiddleware := secure.New(secure.Options{
+		FrameDeny:          s.conf.Secure.FrameDeny,
+		ContentTypeNosniff: s.conf.Secure.ContentTypeNosniff,
+		BrowserXssFilter:   s.conf.Secure.BrowserXssFilter,
+	})
+
+	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
+	log := zerolog.New(os.Stderr)
+
+	// if s.conf.Env == "development" {
+	// 	log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+	// }
+
+	s.router.Use(middleware.RealIP)
+	s.router.Use(middleware.RequestID)
+	s.router.Use(middlewares.Logger(log))
+	s.router.Use(middleware.Recoverer)
+
+	s.router.Use(secureMiddleware.Handler)
+
 	s.router.Use(render.SetContentType(render.ContentTypeJSON))
 
+	// routes
 	s.router.Get("/health", s.handleGetHealth)
 
-	s.router.Route("/api/v1", func(r chi.Router) {
-		r.Get("/", s.handleGetHealth)
-	})
 }

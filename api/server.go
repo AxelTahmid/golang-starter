@@ -20,16 +20,14 @@ type Server struct {
 }
 
 func NewServer(conf *config.Config) *Server {
-	srv := &Server{
+	server := &Server{
 		conf:   *conf,
 		router: chi.NewRouter(),
 	}
 
-	srv.middlewares()
+	server.routes()
 
-	srv.routes()
-
-	return srv
+	return server
 }
 
 func (s *Server) Start(ctx context.Context) {
