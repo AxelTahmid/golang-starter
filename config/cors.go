@@ -3,7 +3,7 @@ package config
 import "github.com/kelseyhightower/envconfig"
 
 type Cors struct {
-	AllowedOrigins   []string `split_words:"true" required:"true"`
+	AllowedOrigins   []string `split_words:"true"`
 	AllowedMethods   []string `split_words:"true" default:"GET,POST,PUT,DELETE,PATCH,OPTIONS"`
 	AllowedHeaders   []string `split_words:"true" default:"Origin,Content-Type,Accept,Authorization"`
 	AllowCredentials bool     `split_words:"true" default:"true"`
