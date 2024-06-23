@@ -9,6 +9,7 @@ import (
 type Config struct {
 	Api
 	Cors
+	Secure
 }
 
 func New() *Config {
@@ -21,5 +22,6 @@ func New() *Config {
 	return &Config{
 		Api:  ServerConfig(),
 		Cors: CorsConfig(),
+		Secure: SecureConfig(),
 	}
 }

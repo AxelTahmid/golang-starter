@@ -15,15 +15,17 @@ import (
 )
 
 type Server struct {
-	cfg    config.Api
+	conf   config.Config
 	router *chi.Mux
 }
 
-func NewServer(cfg config.Api) *Server {
+func NewServer(conf *config.Config) *Server {
 	srv := &Server{
-		cfg:    cfg,
+		conf:   *conf,
 		router: chi.NewRouter(),
 	}
+
+	srv.middlewares()
 
 	srv.routes()
 
@@ -32,11 +34,11 @@ func NewServer(cfg config.Api) *Server {
 
 func (s *Server) Start(ctx context.Context) {
 	server := http.Server{
-		Addr:         fmt.Sprintf(":%d", s.cfg.Port),
+		Addr:         fmt.Sprintf(":%d", s.conf.Api.Port),
 		Handler:      s.router,
-		IdleTimeout:  s.cfg.IdleTimeout,
-		ReadTimeout:  s.cfg.ReadTimeout,
-		WriteTimeout: s.cfg.WriteTimeout,
+		IdleTimeout:  s.conf.Api.IdleTimeout,
+		ReadTimeout:  s.conf.Api.ReadTimeout,
+		WriteTimeout: s.conf.Api.WriteTimeout,
 	}
 
 	shutdownComplete := handleShutdown(func() {
@@ -69,14 +71,3 @@ func handleShutdown(onShutdownSignal func()) <-chan struct{} {
 
 	return shutdown
 }
-
-// func main() {
-// 	r := chi.NewRouter()
-// 	r.Use(middleware.Logger)
-// 	r.Use(middleware.Recoverer)
-
-// 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-// 		w.Write([]byte("Hello World!"))
-// 	})
-// 	http.ListenAndServe(":3000", r)
-// }
