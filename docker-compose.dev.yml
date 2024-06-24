@@ -1,0 +1,61 @@
+services:
+    # TODO: nodemon watcher?
+    # app:
+    #     container_name: 'api'
+    #     env_file: .env
+    #     build:
+    #         context: .
+    #         target: dev
+    #         dockerfile: Dockerfile
+    #     ports:
+    #         - '3000:${PORT}'
+    #     tty: true
+    #     volumes:
+    #         - '.:/app:delegated'
+    #         - 'vendor:/app/vendor'
+    #     links:
+    #         - database
+    #     depends_on:
+    #         database:
+    #             condition: service_healthy
+    #     networks:
+    #         - appnetwork
+
+    database:
+        image: 'postgres:17beta1-bookworm'
+        container_name: db
+        env_file: '.env'
+        environment:
+            POSTGRES_PASSWORD: ${DB_ROOT_PASSWORD}
+            POSTGRES_DB: '${DB_NAME}'
+            POSTGRES_USER: '${DB_USER}'
+        ports:
+            - 5432:5432
+        expose:
+            - '5432'
+        volumes:
+            - 'db_data:/var/lib/postgresql/data'
+        restart: on-failure
+        healthcheck:
+            test:
+                [
+                    'CMD',
+                    'pg_isready',
+                    '-q',
+                    '-d',
+                    '${DB_NAME}',
+                    '-U',
+                    '${DB_USER}',
+                ]
+            interval: 5s
+            timeout: 10s
+            retries: 3
+        networks:
+            - appnetwork
+
+volumes:
+    db_data:
+    vendor:
+
+networks:
+    appnetwork:
