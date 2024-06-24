@@ -14,9 +14,16 @@ func Logger(logger zerolog.Logger) func(http.Handler) http.Handler {
 			ww := middleware.NewWrapResponseWriter(rw, r.ProtoMajor)
 			start := time.Now()
 
+			// reqID := r.Context().Value(middleware.RequestIDKey)
+			// reqIDStr, ok := reqID.(string)
+			// 	if !ok {
+			// 	http.Error(rw, "Request ID not found", http.StatusInternalServerError)
+			// 	return
+			// }
+
 			defer func() {
 				logger.Info().
-					// Str("request-id", (r.Context().Value("request_id").(string) )).
+					Str("request-id", r.Context().Value(middleware.RequestIDKey).(string)).
 					Int("status", ww.Status()).
 					Int("bytes", ww.BytesWritten()).
 					Str("method", r.Method).

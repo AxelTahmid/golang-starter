@@ -21,11 +21,11 @@ func (s *Server) routes() {
 	})
 
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
-	loggerOutput := zerolog.ConsoleWriter{Out: os.Stderr}
-	log := zerolog.New(loggerOutput)
-
-	if s.conf.Env != "development" {
-		log = zerolog.New(os.Stderr)
+	var log zerolog.Logger
+	if s.conf.Env == "development" {
+		log = zerolog.New(zerolog.ConsoleWriter{Out: os.Stderr}).With().Timestamp().Logger()
+	} else {
+		log = zerolog.New(os.Stderr).With().Timestamp().Logger()
 	}
 
 	s.router.Use(middleware.RealIP)
