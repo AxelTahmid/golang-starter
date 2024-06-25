@@ -39,5 +39,4 @@ func (s *Server) routes() {
 
 	// routes
 	s.router.Get("/health", s.handleGetHealth)
-
 }

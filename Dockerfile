@@ -1,7 +1,21 @@
-# TODO: make a makefile command to build & run this image, using env values
+FROM golang:1.22-alpine as dev
+
+WORKDIR /app
+
+RUN go install github.com/air-verse/air@latest
+
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+
+EXPOSE 3000
+
+CMD ["air", "-c", ".air.toml"]
+
+
 FROM migrate/migrate as migrate
 
-# Copy all db files
 COPY ./database/migrations /migrations
 
 ARG DB_NAME

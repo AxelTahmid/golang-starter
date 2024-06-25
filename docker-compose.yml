@@ -1,25 +1,24 @@
 services:
-    # TODO: nodemon watcher?
-    # app:
-    #     container_name: 'api'
-    #     env_file: .env
-    #     build:
-    #         context: .
-    #         target: dev
-    #         dockerfile: Dockerfile
-    #     ports:
-    #         - '3000:${PORT}'
-    #     tty: true
-    #     volumes:
-    #         - '.:/app:delegated'
-    #         - 'vendor:/app/vendor'
-    #     links:
-    #         - database
-    #     depends_on:
-    #         database:
-    #             condition: service_healthy
-    #     networks:
-    #         - appnetwork
+    app:
+        container_name: api
+        env_file: .env
+        build:
+            context: .
+            target: dev
+            dockerfile: Dockerfile
+        ports:
+            - '3000:${PORT}'
+        tty: true
+        volumes:
+            - ./:/app
+            # - './:/app:delegated'
+        links:
+            - database
+        depends_on:
+            database:
+                condition: service_healthy
+        networks:
+            - appnetwork
 
     database:
         image: 'postgres:17beta1-bookworm'
@@ -47,15 +46,14 @@ services:
                     '-U',
                     '${DB_USER}',
                 ]
-            interval: 5s
-            timeout: 10s
-            retries: 3
+            interval: 1s
+            timeout: 5s
+            retries: 1
         networks:
             - appnetwork
 
 volumes:
     db_data:
-    vendor:
 
 networks:
     appnetwork:

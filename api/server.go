@@ -45,6 +45,8 @@ func (s *Server) Start(ctx context.Context) {
 		}
 	})
 
+	log.Printf("Server started on port %d\n", s.conf.Api.Port) // Print log when server starts
+
 	if err := server.ListenAndServe(); err == http.ErrServerClosed {
 		<-shutdownComplete
 	} else {

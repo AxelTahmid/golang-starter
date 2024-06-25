@@ -1,0 +1,31 @@
+root = "."
+tmp_dir = "tmp"
+
+
+[build]
+cmd = "go build -o ./tmp/main  cmd/main.go"
+bin = "./tmp/main"
+
+full_bin = "./tmp/main"
+log = "air_errors.log"
+
+include_ext = ["go", "yml", ".env"]
+exclude_dir = ["tmp"]
+delay = 500 # ms
+stop_on_error = true
+kill_delay = 500 # ms
+
+[log]
+# Only show main log (silences watcher, build, runner)
+main_only = false
+
+[color]
+# Customize each part's color. If no color found, use the raw app log.
+main = "magenta"
+watcher = "cyan"
+build = "yellow"
+runner = "green"
+
+[misc]
+# Delete tmp directory on exit
+clean_on_exit = true
