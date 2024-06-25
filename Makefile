@@ -37,17 +37,11 @@ log:
 log-db:
 	docker logs -f db
 
-migrate-build:
-	docker build -t migrate --target migrate \
-		--build-arg="DB_USER=${DB_USER}" \
-		--build-arg="DB_PASSWORD=${DB_ROOT_PASSWORD}" \
-		--build-arg="DB_NAME=${DB_NAME}" \
-		.
-
 migrate-up:
-	migrate-build
-	docker run --network appnetwork migrate 
+	docker compose --profile tools run --rm -v migrate up
 
-# TODO
 migrate-down:
-	docker run migrate/migrate -path /migrations -database "mysql://${DB_USER}:${DB_ROOT_PASSWORD}@tcp(${DB_HOST}:${DB_PORT})/${DB_NAME}" down
+	docker compose --profile tools run --rm -v migrate down 1
+
+migrate-create:
+	docker compose --profile tools run --rm -v migrate create -ext sql -dir /migrations $(filename)

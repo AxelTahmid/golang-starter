@@ -26,8 +26,8 @@ services:
         env_file: '.env'
         environment:
             POSTGRES_PASSWORD: ${DB_ROOT_PASSWORD}
-            POSTGRES_DB: '${DB_NAME}'
-            POSTGRES_USER: '${DB_USER}'
+            POSTGRES_DB: ${DB_NAME}
+            POSTGRES_USER: ${DB_USER}
         ports:
             - 5432:5432
         expose:
@@ -51,6 +51,26 @@ services:
             retries: 1
         networks:
             - appnetwork
+
+
+    migrate:
+        image: migrate/migrate:latest
+        profiles: ["tools"]
+        volumes:
+        - ./database/migrations:/migrations
+        entrypoint:
+        [
+            "migrate",
+            "-path",
+            "/migrations",
+            "-database",
+            "postgres://${DB_USER}:${DB_ROOT_PASSWORD}@db:5432/${DB_NAME}?sslmode=disable",
+        ]
+        # command: ["up"]
+        depends_on:
+            database:
+                condition: service_healthy
+        restart: on-failure
 
 volumes:
     db_data:
