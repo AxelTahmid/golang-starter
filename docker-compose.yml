@@ -48,9 +48,9 @@ services:
                     '-U',
                     '${DB_USER}',
                 ]
-            interval: 1s
-            timeout: 5s
-            retries: 1
+            interval: 5s
+            timeout: 3s
+            retries: 3
         networks:
             - appnetwork
 
