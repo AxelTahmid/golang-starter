@@ -32,11 +32,11 @@ func NewServer(conf *config.Config) *Server {
 
 func (s *Server) Start(ctx context.Context) {
 	server := http.Server{
-		Addr:         fmt.Sprintf(":%d", s.conf.Api.Port),
+		Addr:         fmt.Sprintf(":%d", s.conf.Server.Port),
 		Handler:      s.router,
-		IdleTimeout:  s.conf.Api.IdleTimeout,
-		ReadTimeout:  s.conf.Api.ReadTimeout,
-		WriteTimeout: s.conf.Api.WriteTimeout,
+		IdleTimeout:  s.conf.Server.IdleTimeout,
+		ReadTimeout:  s.conf.Server.ReadTimeout,
+		WriteTimeout: s.conf.Server.WriteTimeout,
 	}
 
 	shutdownComplete := handleShutdown(func() {
@@ -45,7 +45,7 @@ func (s *Server) Start(ctx context.Context) {
 		}
 	})
 
-	log.Printf("Server started on port %d\n", s.conf.Api.Port) // Print log when server starts
+	log.Printf("Server started on port %d\n", s.conf.Server.Port)
 
 	if err := server.ListenAndServe(); err == http.ErrServerClosed {
 		<-shutdownComplete

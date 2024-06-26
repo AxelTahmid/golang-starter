@@ -1,18 +1,18 @@
 package config
 
 type Config struct {
-	Api
+	Server
 	Cors
 	Secure
+	Database
 }
 
 func New() *Config {
 
-	// load .env either by Makefile or Docker Compose
-
 	return &Config{
-		Api:    ServerConfig(),
-		Cors:   CorsConfig(),
-		Secure: SecureConfig(),
+		Server:   ServerConfig(),
+		Cors:     CorsConfig(),
+		Secure:   SecureConfig(),
+		Database: DBConfig(),
 	}
 }

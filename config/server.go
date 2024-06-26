@@ -6,7 +6,7 @@ import (
 	"github.com/kelseyhightower/envconfig"
 )
 
-type Api struct {
+type Server struct {
 	Env          string        `default:"development"`
 	Name         string        `default:"go-api"`
 	Host         string        `default:"0.0.0.0"`
@@ -17,8 +17,8 @@ type Api struct {
 	WriteTimeout time.Duration `split_words:"true" default:"10s"`
 }
 
-func ServerConfig() Api {
-	var server Api
+func ServerConfig() Server {
+	var server Server
 
 	envconfig.MustProcess("", &server)
 
