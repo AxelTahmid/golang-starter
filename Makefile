@@ -43,5 +43,7 @@ migrate-up:
 migrate-down:
 	docker compose --profile tools run --rm migrate down 1
 
+
+# make migrate-create filename=xxx
 migrate-create:
 	docker compose --profile tools run --rm migrate create -ext sql -dir /migrations $(filename)

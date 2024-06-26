@@ -8,10 +8,11 @@ services:
             dockerfile: Dockerfile
         ports:
             - '3000:${PORT}'
+        expose:
+            - '3000'
         tty: true
         volumes:
             - ./:/app
-            # - './:/app:delegated'
         links:
             - database
         depends_on:
@@ -19,6 +20,7 @@ services:
                 condition: service_healthy
         networks:
             - appnetwork
+        restart: always
 
     database:
         image: 'postgres:17beta1-bookworm'
@@ -66,6 +68,8 @@ services:
                 'postgres://${DB_USER}:${DB_ROOT_PASSWORD}@db:5432/${DB_NAME}?sslmode=disable',
             ]
         # command: ["up"]
+        networks:
+            - appnetwork
         depends_on:
             database:
                 condition: service_healthy
