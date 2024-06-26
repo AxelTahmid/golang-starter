@@ -9,7 +9,7 @@ bin = "./tmp/main"
 full_bin = "./tmp/main"
 log = "air_errors.log"
 
-include_ext = ["go", "yml", ".env"]
+include_ext = ["go", "yml", "env"]
 exclude_dir = ["tmp"]
 delay = 500 # ms
 stop_on_error = true
