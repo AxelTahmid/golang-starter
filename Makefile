@@ -38,10 +38,10 @@ log-db:
 	docker logs -f db
 
 migrate-up:
-	docker compose --profile tools run --rm -v migrate up
+	docker compose --profile tools run --rm migrate up
 
 migrate-down:
-	docker compose --profile tools run --rm -v migrate down 1
+	docker compose --profile tools run --rm migrate down 1
 
 migrate-create:
-	docker compose --profile tools run --rm -v migrate create -ext sql -dir /migrations $(filename)
+	docker compose --profile tools run --rm migrate create -ext sql -dir /migrations $(filename)

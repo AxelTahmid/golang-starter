@@ -52,20 +52,19 @@ services:
         networks:
             - appnetwork
 
-
     migrate:
         image: migrate/migrate:latest
-        profiles: ["tools"]
+        profiles: ['tools']
         volumes:
-        - ./database/migrations:/migrations
+            - ./database/migrations:/migrations
         entrypoint:
-        [
-            "migrate",
-            "-path",
-            "/migrations",
-            "-database",
-            "postgres://${DB_USER}:${DB_ROOT_PASSWORD}@db:5432/${DB_NAME}?sslmode=disable",
-        ]
+            [
+                'migrate',
+                '-path',
+                '/migrations',
+                '-database',
+                'postgres://${DB_USER}:${DB_ROOT_PASSWORD}@db:5432/${DB_NAME}?sslmode=disable',
+            ]
         # command: ["up"]
         depends_on:
             database:
