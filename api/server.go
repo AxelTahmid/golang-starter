@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
 	"log"
 	"net/http"
@@ -35,9 +36,24 @@ func NewServer(conf *config.Config, db *db.Postgres) *Server {
 
 func (s *Server) Start(ctx context.Context) {
 
+	serverTLSCert, err := tls.LoadX509KeyPair(s.conf.Server.TLSCertPath, s.conf.Server.TLSKeyPath)
+	if err != nil {
+		log.Fatalf("Error loading certificate and key file: %v", err)
+	}
+
+	tlsConfig := &tls.Config{
+		Certificates: []tls.Certificate{serverTLSCert},
+	}
+
+	err = s.db.Ping(context.Background())
+	if err != nil {
+		log.Fatalf("Error connecting to database: %v", err)
+	}
+
 	server := http.Server{
 		Addr:         fmt.Sprintf(":%d", s.conf.Server.Port),
 		Handler:      s.router,
+		TLSConfig:    tlsConfig,
 		IdleTimeout:  s.conf.Server.IdleTimeout,
 		ReadTimeout:  s.conf.Server.ReadTimeout,
 		WriteTimeout: s.conf.Server.WriteTimeout,
@@ -51,12 +67,7 @@ func (s *Server) Start(ctx context.Context) {
 
 	log.Printf("Server started on port %d\n", s.conf.Server.Port)
 
-	// err := s.db.Ping(context.Background())
-	// if err != nil {
-	// 	return err
-	// }
-
-	if err := server.ListenAndServe(); err == http.ErrServerClosed {
+	if err := server.ListenAndServeTLS("", ""); err == http.ErrServerClosed {
 		<-shutdownComplete
 	} else {
 		log.Printf("http.ListenAndServe failed: %v\n", err)

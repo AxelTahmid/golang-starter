@@ -5,10 +5,9 @@ ifneq (,$(wildcard ./.env))
 endif
 
 # tls for local dev only, in deployment certbot is used. 
-# use pass 1234
 tls:
 	cd ./cert && \
-	openssl req -newkey rsa:2048 -new -x509 -keyout tls.key -out tls.crt -days 365 \
+	openssl req -nodes -newkey rsa:2048 -new -x509 -keyout tls.key -out tls.crt -days 365 \
 	-subj "//C=BD/ST=Dhaka/L=Dhaka/O=Golang/CN=localhost"
 
 run: 
