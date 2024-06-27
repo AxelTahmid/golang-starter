@@ -58,7 +58,7 @@ services:
         image: migrate/migrate:latest
         profiles: ['tools']
         volumes:
-            - ./database/migrations:/migrations
+            - ./db/migrations:/migrations
         entrypoint:
             [
                 'migrate',
