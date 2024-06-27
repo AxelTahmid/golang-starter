@@ -24,7 +24,7 @@ func main() {
 		Certificates: []tls.Certificate{serverTLSCert},
 	}
 
-	dbconn, err := db.ConnectDB(ctx, conf.Database.Url)
+	dbconn, err := db.CreatePool(ctx, conf.Database)
 	if err != nil {
 		log.Fatalf("Db Connection Failed: %v", err)
 	}
