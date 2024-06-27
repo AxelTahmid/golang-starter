@@ -4,11 +4,22 @@ ifneq (,$(wildcard ./.env))
     export
 endif
 
+# tls for local dev only, in deployment certbot is used. 
+# use pass 1234
+tls:
+	cd ./cert && \
+	openssl req -newkey rsa:2048 -new -x509 -keyout tls.key -out tls.crt -days 365 \
+	-subj "//C=BD/ST=Dhaka/L=Dhaka/O=Golang/CN=localhost"
+
 run: 
+	deps
 	go run ./cmd/main.go
 
 tidy:
 	go mod tidy
+	deps
+
+deps:
 	go mod download
 
 deps-upgrade:

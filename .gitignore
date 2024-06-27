@@ -23,4 +23,9 @@ tmp/
 go.work
 go.work.sum
 
-.env
+# extensions to ignore
+*.env
+*.key
+*.crt
+*.pem
+*.pfx
