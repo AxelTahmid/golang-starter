@@ -56,3 +56,9 @@ migrate-down:
 # make migrate-create filename=xxx
 migrate-create:
 	docker compose --profile tools run --rm migrate create -ext sql -dir /migrations $(filename)
+
+lint:
+	docker run -t --rm -v $(PWD):/app -w /app golangci/golangci-lint:v1.59-alpine golangci-lint run -v
+
+lint-cache:
+	docker run --rm -v $(PWD):/app -v ~/.cache/golangci-lint/v1.59-alpine:/root/.cache -w /app golangci/golangci-lint:v1.59.1 golangci-lint run -v
