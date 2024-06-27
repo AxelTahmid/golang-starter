@@ -8,7 +8,7 @@ type Secure struct {
 	HostsProxyHeaders     []string          `split_words:"true" default:"X-Forwarded-Host"`
 	SSLRedirect           bool              `split_words:"true" default:"true"`
 	SSLHost               string            `split_words:"true" default:"localhost"`
-	STSSeconds            int               `split_words:"true" default:"31536000"`
+	STSSeconds            int64             `split_words:"true" default:"31536000"`
 	STSIncludeSubdomains  bool              `split_words:"true" default:"true"`
 	STSPreload            bool              `split_words:"true" default:"true"`
 	FrameDeny             bool              `split_words:"true" default:"true"`
