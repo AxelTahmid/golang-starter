@@ -1,11 +1,27 @@
 ## TODOs
 
--   SSL Cert generation and serve over https
--   Database connectivity - sqlx
--   Database migration - golang-migrate
+-   Database connectivity - pgxpool
 -   Request Validation - validator/v10
 -   Docgen in .md for routes
 
-## Notes
+## Get Started
+
+Generate TLS cert for serving
+
+```sh
+make tls
+```
+
+install & clean dependencies
+
+```sh
+make tidy
+```
+
+run the development server with hot realod
+
+```sh
+make dev
+```
 
 -   Make migration : `make migrate-create filename=xxx`

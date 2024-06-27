@@ -17,16 +17,18 @@ import (
 )
 
 type Server struct {
-	db     *db.Postgres
 	conf   config.Config
 	router *chi.Mux
+	db     *db.Postgres
+	tls    *tls.Config
 }
 
-func NewServer(conf *config.Config, db *db.Postgres) *Server {
+func NewServer(c *config.Config, db *db.Postgres, t *tls.Config) *Server {
 	server := &Server{
-		conf:   *conf,
+		conf:   *c,
 		router: chi.NewRouter(),
 		db:     db,
+		tls:    t,
 	}
 
 	server.routes()
@@ -36,24 +38,10 @@ func NewServer(conf *config.Config, db *db.Postgres) *Server {
 
 func (s *Server) Start(ctx context.Context) {
 
-	serverTLSCert, err := tls.LoadX509KeyPair(s.conf.Server.TLSCertPath, s.conf.Server.TLSKeyPath)
-	if err != nil {
-		log.Fatalf("Error loading certificate and key file: %v", err)
-	}
-
-	tlsConfig := &tls.Config{
-		Certificates: []tls.Certificate{serverTLSCert},
-	}
-
-	err = s.db.Ping(context.Background())
-	if err != nil {
-		log.Fatalf("Error connecting to database: %v", err)
-	}
-
 	server := http.Server{
 		Addr:         fmt.Sprintf(":%d", s.conf.Server.Port),
 		Handler:      s.router,
-		TLSConfig:    tlsConfig,
+		TLSConfig:    s.tls,
 		IdleTimeout:  s.conf.Server.IdleTimeout,
 		ReadTimeout:  s.conf.Server.ReadTimeout,
 		WriteTimeout: s.conf.Server.WriteTimeout,

@@ -4,19 +4,11 @@ ifneq (,$(wildcard ./.env))
     export
 endif
 
-# tls for local dev only, in deployment certbot is used. 
+# self-seigned tls for local dev only
 tls:
 	cd ./cert && \
 	openssl req -nodes -newkey rsa:2048 -new -x509 -keyout tls.key -out tls.crt -days 365 \
 	-subj "//C=BD/ST=Dhaka/L=Dhaka/O=Golang/CN=localhost"
-
-run: 
-	deps
-	go run ./cmd/main.go
-
-tidy:
-	go mod tidy
-	deps
 
 deps:
 	go mod download
@@ -26,6 +18,14 @@ deps-upgrade:
 
 deps-cleancache:
 	go clean -modcache
+
+run: 
+	go mod download
+	go run ./cmd/main.go
+
+tidy:
+	go mod tidy
+	go mod download
 
 build:
 	docker compose up -d --build --no-cache
