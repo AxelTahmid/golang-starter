@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"sync"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -15,35 +16,45 @@ type Postgres struct {
 	db *pgxpool.Pool
 }
 
-var pool *Postgres
+var (
+	pool   *Postgres
+	pgOnce sync.Once
+)
 
 func Config(conf config.Database) *pgxpool.Config {
 
-	parsedConfig, err := pgxpool.ParseConfig(conf.Url)
+	dbConfig, err := pgxpool.ParseConfig(conf.Url)
 
 	if err != nil {
 		log.Fatalf("Unable to parse database URL: %v", err)
 	}
 
-	parsedConfig.MaxConns = conf.PoolMax
-	parsedConfig.MinConns = conf.PoolMin
-	parsedConfig.AfterConnect = SetTimeZone
+	dbConfig.MaxConns = conf.PoolMax
+	dbConfig.MinConns = conf.PoolMin
+	dbConfig.MaxConnLifetime = conf.MaxConnLifetime
+	dbConfig.MaxConnIdleTime = conf.MaxConnIdleTime
+	dbConfig.HealthCheckPeriod = conf.HealthCheckPeriod
+	dbConfig.ConnConfig.ConnectTimeout = conf.ConnectTimeout
 
-	return parsedConfig
+	dbConfig.AfterConnect = SetTimeZone
+
+	return dbConfig
 }
 
 // look into closing connection
 func CreatePool(ctx context.Context, conf config.Database) (*Postgres, error) {
 	var err error
 
-	dbPool, dbErr := pgxpool.NewWithConfig(context.Background(), Config(conf))
-	if dbErr != nil {
-		return nil, err
-	}
+	pgOnce.Do(func() {
+		dbPool, dbErr := pgxpool.NewWithConfig(context.Background(), Config(conf))
+		if dbErr != nil {
+			err = dbErr
+		}
 
-	pool = &Postgres{dbPool}
+		pool = &Postgres{dbPool}
+	})
 
-	return pool, nil
+	return pool, err
 }
 
 func (pg *Postgres) Ping(ctx context.Context) error {
