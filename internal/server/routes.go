@@ -3,11 +3,12 @@ package server
 import (
 	"os"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/go-chi/render"
 	"github.com/rs/zerolog"
 
 	"github.com/AxelTahmid/golang-starter/internal/middlewares"
+	"github.com/AxelTahmid/golang-starter/internal/modules/auth"
 )
 
 func (s *Server) routes() {
@@ -24,9 +25,10 @@ func (s *Server) routes() {
 	s.router.Use(middlewares.Logger(log))
 	s.router.Use(middleware.Recoverer)
 	s.router.Use(middlewares.Helmet(s.conf.Secure).Handler)
-
-	s.router.Use(render.SetContentType(render.ContentTypeJSON))
+	s.router.Use(middleware.Heartbeat("/ping"))
 
 	// routes
-	s.router.Get("/health", s.handleGetHealth)
+	s.router.Route("/api/v1", func(r chi.Router) {
+		r.Mount("/auth", auth.Routes())
+	})
 }
