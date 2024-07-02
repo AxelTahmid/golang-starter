@@ -29,6 +29,6 @@ func (s *Server) routes() {
 
 	// routes
 	s.router.Route("/api/v1", func(r chi.Router) {
-		r.Mount("/auth", auth.Routes())
+		r.Mount("/auth", auth.Routes(s.db))
 	})
 }
