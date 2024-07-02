@@ -2,9 +2,9 @@ package auth
 
 import (
 	"encoding/json"
-	"fmt"
-	"log"
 	"net/http"
+
+	"github.com/AxelTahmid/golang-starter/internal/utils"
 )
 
 // routing & validation
@@ -25,12 +25,15 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	email := fmt.Sprintf(`the email is %s`, u.Email)
-	password := u.Password
+	hash, err := utils.HashPassword(u.Password)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
-	log.Printf("email: %v, password: %v", email, password)
+	u.Password = hash
 
-	err = json.NewEncoder(w).Encode(User{email, password})
+	err = json.NewEncoder(w).Encode(u)
 	if err != nil {
 		http.Error(w, "Internal error", http.StatusInternalServerError)
 		return

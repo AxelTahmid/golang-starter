@@ -1,5 +1,7 @@
 package config
 
+import "sync"
+
 type Config struct {
 	Server
 	Cors
@@ -7,12 +9,22 @@ type Config struct {
 	Database
 }
 
+var (
+	once sync.Once
+	conf *Config
+)
+
 func New() *Config {
 
-	return &Config{
-		Server:   serverConfig(),
-		Cors:     corsConfig(),
-		Secure:   secureConfig(),
-		Database: dBConfig(),
-	}
+	once.Do(func() {
+		conf = &Config{
+			Server:   serverConfig(),
+			Cors:     corsConfig(),
+			Secure:   secureConfig(),
+			Database: dBConfig(),
+		}
+	},
+	)
+
+	return conf
 }
