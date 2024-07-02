@@ -21,9 +21,9 @@ func (s *Server) routes() {
 
 	s.router.Use(middleware.RealIP)
 	s.router.Use(middleware.RequestID)
-	s.router.Use(middlewares.Helmet(s.conf.Secure).Handler)
 	s.router.Use(middlewares.Logger(log))
 	s.router.Use(middleware.Recoverer)
+	s.router.Use(middlewares.Helmet(s.conf.Secure).Handler)
 
 	s.router.Use(render.SetContentType(render.ContentTypeJSON))
 

@@ -41,7 +41,6 @@ func Config(conf config.Database) *pgxpool.Config {
 	return dbConfig
 }
 
-// look into closing connection
 func CreatePool(ctx context.Context, conf config.Database) (*Postgres, error) {
 	var err error
 

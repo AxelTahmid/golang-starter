@@ -48,6 +48,11 @@ func (s *Server) Start(ctx context.Context) {
 	}
 
 	shutdownComplete := handleShutdown(func() {
+
+		log.Println("Starting server shutdown ...")
+
+		s.db.Close()
+
 		if err := server.Shutdown(ctx); err != nil {
 			log.Printf("server.Shutdown failed: %v\n", err)
 		}
@@ -61,7 +66,7 @@ func (s *Server) Start(ctx context.Context) {
 		log.Printf("http.ListenAndServe failed: %v\n", err)
 	}
 
-	log.Println("Shutdown gracefully")
+	log.Println("Server shutdown gracefully")
 }
 
 func handleShutdown(onShutdownSignal func()) <-chan struct{} {
