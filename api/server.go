@@ -17,7 +17,7 @@ import (
 )
 
 type Server struct {
-	conf   config.Config
+	conf   *config.Config
 	router *chi.Mux
 	db     *db.Postgres
 	tls    *tls.Config
@@ -25,7 +25,7 @@ type Server struct {
 
 func NewServer(c *config.Config, db *db.Postgres, t *tls.Config) *Server {
 	server := &Server{
-		conf:   *c,
+		conf:   c,
 		router: chi.NewRouter(),
 		db:     db,
 		tls:    t,
