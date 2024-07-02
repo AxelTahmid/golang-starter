@@ -53,9 +53,14 @@ migrate-up:
 migrate-down:
 	docker compose --profile tools run --rm migrate down 1
 
-# make migrate-create filename=xxx
+# https://github.com/golang-migrate/migrate/issues/282#issuecomment-530743258
+# make migrate-force v=xxx
+migrate-force:
+	docker compose --profile tools run --rm migrate force ${v}
+
+# make migrate-create f=xxx
 migrate-create:
-	docker compose --profile tools run --rm migrate create -ext sql -dir /migrations $(filename)
+	docker compose --profile tools run --rm migrate create -ext sql -dir /migrations $(f)
 
 lint:
 	docker run -t --rm -v $(PWD):/app -w /app golangci/golangci-lint:v1.59-alpine golangci-lint run -v
