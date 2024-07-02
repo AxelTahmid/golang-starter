@@ -5,9 +5,9 @@ import (
 	"crypto/tls"
 	"log"
 
-	"github.com/AxelTahmid/golang-starter/api"
 	"github.com/AxelTahmid/golang-starter/config"
 	"github.com/AxelTahmid/golang-starter/db"
+	"github.com/AxelTahmid/golang-starter/internal/server"
 )
 
 func main() {
@@ -34,6 +34,6 @@ func main() {
 		log.Fatalf("Error connecting to database: %v", err)
 	}
 
-	server := api.NewServer(conf, dbconn, tlsConfig)
+	server := server.NewServer(conf, dbconn, tlsConfig)
 	server.Start(ctx)
 }

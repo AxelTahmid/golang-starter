@@ -17,7 +17,7 @@ type Database struct {
 	HealthCheckPeriod time.Duration `default:"60s"`
 }
 
-func DBConfig() Database {
+func dBConfig() Database {
 	var d Database
 	envconfig.MustProcess("DB", &d)
 

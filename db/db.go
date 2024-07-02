@@ -21,7 +21,7 @@ var (
 	pgOnce sync.Once
 )
 
-func Config(conf config.Database) *pgxpool.Config {
+func dbConfig(conf config.Database) *pgxpool.Config {
 
 	dbConfig, err := pgxpool.ParseConfig(conf.Url)
 
@@ -36,7 +36,7 @@ func Config(conf config.Database) *pgxpool.Config {
 	dbConfig.HealthCheckPeriod = conf.HealthCheckPeriod
 	dbConfig.ConnConfig.ConnectTimeout = conf.ConnectTimeout
 
-	dbConfig.AfterConnect = SetTimeZone
+	dbConfig.AfterConnect = setDbTimeZone
 
 	return dbConfig
 }
@@ -45,7 +45,7 @@ func CreatePool(ctx context.Context, conf config.Database) (*Postgres, error) {
 	var err error
 
 	pgOnce.Do(func() {
-		dbPool, dbErr := pgxpool.NewWithConfig(context.Background(), Config(conf))
+		dbPool, dbErr := pgxpool.NewWithConfig(context.Background(), dbConfig(conf))
 		if dbErr != nil {
 			err = dbErr
 		}
@@ -64,7 +64,7 @@ func (pg *Postgres) Close() {
 	pg.db.Close()
 }
 
-func SetTimeZone(ctx context.Context, conn *pgx.Conn) error {
+func setDbTimeZone(ctx context.Context, conn *pgx.Conn) error {
 	_, err := conn.Exec(ctx, "SET TIME ZONE 'UTC';")
 
 	if err != nil {

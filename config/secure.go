@@ -18,7 +18,7 @@ type Secure struct {
 	SSLProxyHeaders       map[string]string `split_words:"true" default:"X-Forwarded-Proto:https"`
 }
 
-func SecureConfig() Secure {
+func secureConfig() Secure {
 	var s Secure
 	envconfig.MustProcess("SECURE", &s)
 

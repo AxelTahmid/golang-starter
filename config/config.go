@@ -10,9 +10,9 @@ type Config struct {
 func New() *Config {
 
 	return &Config{
-		Server:   ServerConfig(),
-		Cors:     CorsConfig(),
-		Secure:   SecureConfig(),
-		Database: DBConfig(),
+		Server:   serverConfig(),
+		Cors:     corsConfig(),
+		Secure:   secureConfig(),
+		Database: dBConfig(),
 	}
 }

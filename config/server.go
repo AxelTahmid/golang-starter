@@ -19,7 +19,7 @@ type Server struct {
 	TLSKeyPath   string        `split_words:"true" default:"./cert/tls.key"`
 }
 
-func ServerConfig() Server {
+func serverConfig() Server {
 	var server Server
 
 	envconfig.MustProcess("", &server)

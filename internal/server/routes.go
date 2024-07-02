@@ -1,4 +1,4 @@
-package api
+package server
 
 import (
 	"os"
@@ -7,7 +7,7 @@ import (
 	"github.com/go-chi/render"
 	"github.com/rs/zerolog"
 
-	"github.com/AxelTahmid/golang-starter/api/middlewares"
+	"github.com/AxelTahmid/golang-starter/internal/middlewares"
 )
 
 func (s *Server) routes() {

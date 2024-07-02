@@ -10,7 +10,7 @@ type Cors struct {
 	MaxAge           int      `split_words:"true" default:"300"`
 }
 
-func CorsConfig() Cors {
+func corsConfig() Cors {
 	var c Cors
 	envconfig.MustProcess("CORS", &c)
 
