@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
+	chiMiddleware "github.com/go-chi/chi/v5/middleware"
 	"github.com/lmittmann/tint"
 
 	"github.com/AxelTahmid/golang-starter/internal/middlewares"
@@ -28,12 +28,13 @@ func (s *Server) routes() {
 		))
 	}
 
-	s.router.Use(middleware.RealIP)
-	s.router.Use(middleware.RequestID)
+	s.router.Use(chiMiddleware.RealIP)
+	s.router.Use(chiMiddleware.RequestID)
 	s.router.Use(middlewares.Logger(logger))
-	s.router.Use(middleware.Recoverer)
+	s.router.Use(middlewares.Recovery)
 	s.router.Use(middlewares.Helmet(s.conf.Secure).Handler)
-	s.router.Use(middleware.Heartbeat("/ping"))
+	s.router.Use(middlewares.Json)
+	s.router.Use(chiMiddleware.Heartbeat("/ping"))
 
 	// routes
 	s.router.Route("/api/v1", func(r chi.Router) {

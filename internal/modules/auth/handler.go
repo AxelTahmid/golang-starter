@@ -1,100 +1,83 @@
 package auth
 
 import (
-	"encoding/json"
 	"net/http"
 	"strings"
 
-	"github.com/AxelTahmid/golang-starter/internal/utils"
 	"github.com/go-playground/validator/v10"
+
+	"github.com/AxelTahmid/golang-starter/internal/utils/bcrypt"
+	"github.com/AxelTahmid/golang-starter/internal/utils/message"
+	"github.com/AxelTahmid/golang-starter/internal/utils/request"
+	"github.com/AxelTahmid/golang-starter/internal/utils/respond"
+	"github.com/AxelTahmid/golang-starter/internal/utils/validate"
 )
 
+var v = validator.New()
 var authService = AuthService{}
 
 func (a AuthHandler) login(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
+	var req LoginRequest
 
-	var user UserLogin
-
-	err := json.NewDecoder(r.Body).Decode(&user)
+	err := request.DecodeJSON(w, r, &req)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		respond.Error(w, http.StatusBadRequest, message.ErrBadRequest)
 		return
 	}
 
-	user.Email = strings.ToLower(user.Email)
+	req.Email = strings.ToLower(req.Email)
 
-	err = validator.New().Struct(user)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+	validationErrs := validate.Validate(v, req)
+	if validationErrs != nil {
+		respond.Errors(w, http.StatusBadRequest, validationErrs)
 		return
 	}
 
-	// check for user in database, if not found return 404
-	fetchedUser, err := authService.getUser(r.Context(), a.postgres.DB, user.Email)
+	fetchedUser, err := authService.GetUser(r.Context(), a.postgres.DB, req.Email)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		respond.Error(w, http.StatusUnauthorized, message.ErrPassOrUserIncorrect)
 		return
 	}
 
-	// if found, verify password
-	isPasswordValid := utils.VerifyPassword(user.Password, fetchedUser.Password)
-	// if password is incorrect, return 401
+	isPasswordValid := bcrypt.VerifyPassword(req.Password, fetchedUser.Password)
 	if !isPasswordValid {
-		http.Error(w, "Password is incorrect", http.StatusUnauthorized)
+		respond.Error(w, http.StatusUnauthorized, message.ErrPassOrUserIncorrect)
 		return
 	}
 
-	// if password is correct, return user data with token
-	err = json.NewEncoder(w).Encode(fetchedUser)
+	respond.Json(w, http.StatusOK, fetchedUser)
 
-	// if any other error occurs, return 500
-	if err != nil {
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
-		return
-	}
 }
 
 func (a AuthHandler) register(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
+	var req RegisterRequest
 
-	var user UserRegister
-
-	err := json.NewDecoder(r.Body).Decode(&user)
+	err := request.DecodeJSON(w, r, &req)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		respond.Error(w, http.StatusBadRequest, message.ErrBadRequest)
 		return
 	}
 
-	err = validator.New().Struct(user)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+	validationErrs := validate.Validate(v, req)
+	if validationErrs != nil {
+		respond.Errors(w, http.StatusBadRequest, validationErrs)
 		return
 	}
 
-	hash, err := utils.HashPassword(user.Password)
+	hash, err := bcrypt.HashPassword(req.Password)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		respond.Errors(w, http.StatusBadRequest, validationErrs)
 		return
 	}
 
-	user.Email = strings.ToLower(user.Email)
-	user.Password = hash
+	req.Email = strings.ToLower(req.Email)
+	req.Password = hash
 
-	// insert user into database
-	err = authService.insertUser(r.Context(), a.postgres.DB, user)
+	err = authService.InsertUser(r.Context(), a.postgres.DB, req)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		respond.Error(w, http.StatusBadRequest, err)
 		return
 	}
 
-	// if successful, return user datam with token
-	// if any other error occurs, return 500
-	// if unique violation, return already exists
-
-	err = json.NewEncoder(w).Encode(user)
-	if err != nil {
-		http.Error(w, "Internal error", http.StatusInternalServerError)
-		return
-	}
+	respond.Status(w, http.StatusCreated)
 }

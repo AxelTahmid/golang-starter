@@ -11,7 +11,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func (s AuthService) getUser(ctx context.Context, pool *pgxpool.Pool, email string) (User, error) {
+func (s AuthService) GetUser(ctx context.Context, pool *pgxpool.Pool, email string) (User, error) {
 	query := `SELECT * FROM users WHERE email = @userEmail;`
 
 	args := pgx.NamedArgs{
@@ -34,7 +34,7 @@ func (s AuthService) getUser(ctx context.Context, pool *pgxpool.Pool, email stri
 	return user, nil
 }
 
-func (s AuthService) insertUser(ctx context.Context, pool *pgxpool.Pool, user UserRegister) error {
+func (s AuthService) InsertUser(ctx context.Context, pool *pgxpool.Pool, user RegisterRequest) error {
 	query := `INSERT INTO users (name, email, password) VALUES (@userName, @userEmail, @hashedPassword);`
 
 	args := pgx.NamedArgs{
