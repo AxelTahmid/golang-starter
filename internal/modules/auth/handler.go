@@ -14,7 +14,7 @@ import (
 )
 
 var v = validator.New()
-var authService = AuthService{}
+var svc = AuthService{}
 
 func (a AuthHandler) login(w http.ResponseWriter, r *http.Request) {
 	var req LoginRequest
@@ -33,7 +33,7 @@ func (a AuthHandler) login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fetchedUser, err := authService.GetUser(r.Context(), a.postgres.DB, req.Email)
+	fetchedUser, err := svc.GetUser(r.Context(), a.postgres.DB, req.Email)
 	if err != nil {
 		respond.Error(w, http.StatusUnauthorized, message.ErrPassOrUserIncorrect)
 		return
@@ -66,14 +66,14 @@ func (a AuthHandler) register(w http.ResponseWriter, r *http.Request) {
 
 	hash, err := bcrypt.HashPassword(req.Password)
 	if err != nil {
-		respond.Errors(w, http.StatusBadRequest, validationErrs)
+		respond.Error(w, http.StatusBadRequest, err)
 		return
 	}
 
 	req.Email = strings.ToLower(req.Email)
 	req.Password = hash
 
-	err = authService.InsertUser(r.Context(), a.postgres.DB, req)
+	err = svc.InsertUser(r.Context(), a.postgres.DB, req)
 	if err != nil {
 		respond.Error(w, http.StatusBadRequest, err)
 		return

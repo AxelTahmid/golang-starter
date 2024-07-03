@@ -11,7 +11,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func (s AuthService) GetUser(ctx context.Context, pool *pgxpool.Pool, email string) (User, error) {
+func (s AuthService) GetUser(ctx context.Context, pool *pgxpool.Pool, email string) (UserEntity, error) {
 	query := `SELECT * FROM users WHERE email = @userEmail;`
 
 	args := pgx.NamedArgs{
@@ -20,15 +20,15 @@ func (s AuthService) GetUser(ctx context.Context, pool *pgxpool.Pool, email stri
 
 	row, err := pool.Query(ctx, query, args)
 	if err != nil {
-		return User{}, fmt.Errorf("unable to query row: %w", err)
+		return UserEntity{}, fmt.Errorf("unable to query row: %w", err)
 	}
 
-	user, err := pgx.CollectOneRow(row, pgx.RowToStructByPos[User])
+	user, err := pgx.CollectOneRow(row, pgx.RowToStructByPos[UserEntity])
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return User{}, fmt.Errorf("user not found: %s", email)
+			return UserEntity{}, fmt.Errorf("user not found: %s", email)
 		}
-		return User{}, fmt.Errorf("unable to scan row: %w", err)
+		return UserEntity{}, fmt.Errorf("unable to scan row: %w", err)
 	}
 
 	return user, nil

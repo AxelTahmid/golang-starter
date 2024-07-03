@@ -14,7 +14,7 @@ type (
 	AuthService struct{}
 
 	// exact order as in database
-	User struct {
+	UserEntity struct {
 		Id        int       `json:"id"`
 		Name      string    `json:"name"`
 		Email     string    `json:"email"`
