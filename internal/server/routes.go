@@ -3,9 +3,11 @@ package server
 import (
 	"log/slog"
 	"os"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/lmittmann/tint"
 
 	"github.com/AxelTahmid/golang-starter/internal/middlewares"
 	"github.com/AxelTahmid/golang-starter/internal/modules/auth"
@@ -14,6 +16,17 @@ import (
 func (s *Server) routes() {
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 	slog.SetDefault(logger)
+
+	if s.conf.AppEnv != "production" {
+		logger = slog.New(tint.NewHandler(os.Stderr, nil))
+
+		slog.SetDefault(slog.New(
+			tint.NewHandler(os.Stderr, &tint.Options{
+				Level:      slog.LevelDebug,
+				TimeFormat: time.Kitchen,
+			}),
+		))
+	}
 
 	s.router.Use(middleware.RealIP)
 	s.router.Use(middleware.RequestID)

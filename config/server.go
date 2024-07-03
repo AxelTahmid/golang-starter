@@ -7,7 +7,7 @@ import (
 )
 
 type Server struct {
-	Env          string        `default:"development"`
+	AppEnv       string        `default:"development"`
 	Name         string        `default:"go-api"`
 	Host         string        `default:"0.0.0.0"`
 	Port         int           `default:"3000"`

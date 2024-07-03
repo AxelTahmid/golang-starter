@@ -55,7 +55,7 @@ func CreatePool(ctx context.Context, conf config.Database) (*Postgres, error) {
 	var err error
 
 	pgOnce.Do(func() {
-		dbPool, dbErr := pgxpool.NewWithConfig(context.Background(), initConfig(conf))
+		dbPool, dbErr := pgxpool.NewWithConfig(ctx, initConfig(conf))
 		if dbErr != nil {
 			err = dbErr
 		}
