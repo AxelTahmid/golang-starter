@@ -29,7 +29,7 @@ func main() {
 		log.Fatalf("Db Connection Failed: %v", err)
 	}
 
-	err = dbconn.Ping(context.Background())
+	err = dbconn.Ping(ctx)
 	if err != nil {
 		log.Fatalf("Error connecting to database: %v", err)
 	}
