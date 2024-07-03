@@ -1,14 +1,14 @@
 package middlewares
 
 import (
+	"log/slog"
 	"net/http"
 	"time"
 
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/rs/zerolog"
 )
 
-func Logger(logger zerolog.Logger) func(http.Handler) http.Handler {
+func Logger(logger *slog.Logger) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		fn := func(rw http.ResponseWriter, r *http.Request) {
 			ww := middleware.NewWrapResponseWriter(rw, r.ProtoMajor)
@@ -18,21 +18,22 @@ func Logger(logger zerolog.Logger) func(http.Handler) http.Handler {
 
 			reqIDStr, ok := reqID.(string)
 			if !ok {
-				logger.Info().Str("request-id", "unknown").Msg("request started")
+				logger.Info("request started", "request-id", "unknown")
 			}
 
+			// "bytes", ww.BytesWritten(),
+
 			defer func() {
-				logger.Info().
-					Str("request-id", reqIDStr).
-					Int("status", ww.Status()).
-					Int("bytes", ww.BytesWritten()).
-					Str("method", r.Method).
-					Str("path", r.URL.Path).
-					Str("query", r.URL.RawQuery).
-					Str("ip", r.RemoteAddr).
-					Str("user-agent", r.UserAgent()).
-					Dur("latency", time.Since(start)).
-					Msg("request completed")
+				logger.Info("request completed",
+					"request-id", reqIDStr,
+					"status", ww.Status(),
+					"method", r.Method,
+					"path", r.URL.Path,
+					"query", r.URL.RawQuery,
+					"ip", r.RemoteAddr,
+					"user-agent", r.UserAgent(),
+					"latency-ms", time.Since(start),
+				)
 			}()
 
 			next.ServeHTTP(ww, r)

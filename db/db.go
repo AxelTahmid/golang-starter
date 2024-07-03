@@ -4,12 +4,13 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"log/slog"
 	"os"
 	"sync"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/rs/zerolog"
+	"github.com/jackc/pgx/v5/tracelog"
 
 	"github.com/AxelTahmid/golang-starter/config"
 )
@@ -40,15 +41,12 @@ func initConfig(conf config.Database) *pgxpool.Config {
 
 	dbConfig.AfterConnect = setDbTimeZone
 
-	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
-	log := zerolog.New(os.Stderr).With().Timestamp().Logger()
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+	// slog.SetDefault(logger)
 
-	if os.Getenv("ENV") == "development" {
-		log = zerolog.New(zerolog.ConsoleWriter{Out: os.Stderr}).With().Timestamp().Logger()
-	}
-
-	dbConfig.ConnConfig.Tracer = &pgTracer{
-		log: &log,
+	dbConfig.ConnConfig.Tracer = &tracelog.TraceLog{
+		Logger:   NewLogger(logger),
+		LogLevel: tracelog.LogLevelTrace,
 	}
 
 	return dbConfig

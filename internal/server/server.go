@@ -5,6 +5,7 @@ import (
 	"crypto/tls"
 	"fmt"
 	"log"
+	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
@@ -37,6 +38,7 @@ func NewServer(c *config.Config, db *db.Postgres, t *tls.Config) *Server {
 }
 
 func (s *Server) Start(ctx context.Context) {
+	logger := slog.NewLogLogger(slog.NewJSONHandler(os.Stdout, nil), slog.LevelError)
 
 	server := http.Server{
 		Addr:         fmt.Sprintf(":%d", s.conf.Server.Port),
@@ -45,6 +47,7 @@ func (s *Server) Start(ctx context.Context) {
 		IdleTimeout:  s.conf.Server.IdleTimeout,
 		ReadTimeout:  s.conf.Server.ReadTimeout,
 		WriteTimeout: s.conf.Server.WriteTimeout,
+		ErrorLog:     logger,
 	}
 
 	shutdownComplete := handleShutdown(func() {
