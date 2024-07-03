@@ -18,21 +18,32 @@ func Logger(logger *slog.Logger) func(http.Handler) http.Handler {
 
 			reqIDStr, ok := reqID.(string)
 			if !ok {
-				logger.Info("request started", "request-id", "unknown")
+				logger.LogAttrs(
+					r.Context(),
+					slog.LevelInfo,
+					"request started",
+					slog.String("request-id", "unknown"),
+					slog.String("method", r.Method),
+					slog.String("path", r.URL.Path),
+					slog.String("ip", r.RemoteAddr),
+				)
 			}
 
 			// "bytes", ww.BytesWritten(),
 
 			defer func() {
-				logger.Info("request completed",
-					"request-id", reqIDStr,
-					"status", ww.Status(),
-					"method", r.Method,
-					"path", r.URL.Path,
-					"query", r.URL.RawQuery,
-					"ip", r.RemoteAddr,
-					"user-agent", r.UserAgent(),
-					"latency-ms", time.Since(start),
+				logger.LogAttrs(
+					r.Context(),
+					slog.LevelInfo,
+					"request completed",
+					slog.String("request-id", reqIDStr),
+					slog.Int("status", ww.Status()),
+					slog.String("method", r.Method),
+					slog.String("path", r.URL.Path),
+					slog.String("query", r.URL.RawQuery),
+					slog.String("ip", r.RemoteAddr),
+					slog.String("user-agent", r.UserAgent()),
+					slog.Duration("latency-ms", time.Since(start)),
 				)
 			}()
 
