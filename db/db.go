@@ -4,10 +4,12 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 	"sync"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/rs/zerolog"
 
 	"github.com/AxelTahmid/golang-starter/config"
 )
@@ -21,7 +23,7 @@ var (
 	pgOnce sync.Once
 )
 
-func dbConfig(conf config.Database) *pgxpool.Config {
+func initConfig(conf config.Database) *pgxpool.Config {
 
 	dbConfig, err := pgxpool.ParseConfig(conf.Url)
 
@@ -38,6 +40,17 @@ func dbConfig(conf config.Database) *pgxpool.Config {
 
 	dbConfig.AfterConnect = setDbTimeZone
 
+	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
+	log := zerolog.New(os.Stderr).With().Timestamp().Logger()
+
+	if os.Getenv("ENV") == "development" {
+		log = zerolog.New(zerolog.ConsoleWriter{Out: os.Stderr}).With().Timestamp().Logger()
+	}
+
+	dbConfig.ConnConfig.Tracer = &pgTracer{
+		log: &log,
+	}
+
 	return dbConfig
 }
 
@@ -45,7 +58,7 @@ func CreatePool(ctx context.Context, conf config.Database) (*Postgres, error) {
 	var err error
 
 	pgOnce.Do(func() {
-		dbPool, dbErr := pgxpool.NewWithConfig(context.Background(), dbConfig(conf))
+		dbPool, dbErr := pgxpool.NewWithConfig(context.Background(), initConfig(conf))
 		if dbErr != nil {
 			err = dbErr
 		}
