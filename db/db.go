@@ -42,10 +42,9 @@ func initConfig(conf config.Database) *pgxpool.Config {
 	dbConfig.AfterConnect = setDbTimeZone
 
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
-	// slog.SetDefault(logger)
 
 	dbConfig.ConnConfig.Tracer = &tracelog.TraceLog{
-		Logger:   NewLogger(logger),
+		Logger:   NewLogger(logger.With("module", "pgx")),
 		LogLevel: tracelog.LogLevelTrace,
 	}
 
