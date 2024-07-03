@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/AxelTahmid/golang-starter/internal/utils"
+	"github.com/go-playground/validator/v10"
 )
 
 var authService = AuthService{}
@@ -22,6 +23,12 @@ func (a AuthHandler) login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user.Email = strings.ToLower(user.Email)
+
+	err = validator.New().Struct(user)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
 	// check for user in database, if not found return 404
 	fetchedUser, err := authService.getUser(r.Context(), a.postgres.DB, user.Email)
@@ -54,6 +61,12 @@ func (a AuthHandler) register(w http.ResponseWriter, r *http.Request) {
 	var user UserRegister
 
 	err := json.NewDecoder(r.Body).Decode(&user)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	err = validator.New().Struct(user)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

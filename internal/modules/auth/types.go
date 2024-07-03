@@ -6,35 +6,37 @@ import (
 	"github.com/AxelTahmid/golang-starter/db"
 )
 
-type AuthHandler struct {
-	postgres *db.Postgres
-}
+type (
+	AuthHandler struct {
+		postgres *db.Postgres
+	}
 
-type AuthService struct{}
+	AuthService struct{}
 
-// exact order as in database
-type User struct {
-	Id        int       `json:"id"`
-	Name      string    `json:"name"`
-	Email     string    `json:"email"`
-	Password  string    `json:"password"`
-	Verified  bool      `json:"verified"`
-	Role      string    `json:"role"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
-}
+	// exact order as in database
+	User struct {
+		Id        int       `json:"id"`
+		Name      string    `json:"name"`
+		Email     string    `json:"email"`
+		Password  string    `json:"password"`
+		Verified  bool      `json:"verified"`
+		Role      string    `json:"role"`
+		CreatedAt time.Time `json:"created_at"`
+		UpdatedAt time.Time `json:"updated_at"`
+	}
 
-type UserLogin struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
+	UserLogin struct {
+		Email    string `json:"email" validate:"required,email"`
+		Password string `json:"password" validate:"required,min=8"`
+	}
 
-type UserRegister struct {
-	Name     string `json:"name"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
+	UserRegister struct {
+		Name     string `json:"name"`
+		Email    string `json:"email" validate:"required,email"`
+		Password string `json:"password" validate:"required,min=8"`
+	}
 
-type LoginResponse struct {
-	Token string `json:"token"`
-}
+	LoginResponse struct {
+		Token string `json:"token"`
+	}
+)
