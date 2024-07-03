@@ -10,6 +10,11 @@ tls:
 	openssl req -nodes -newkey rsa:2048 -new -x509 -keyout tls.key -out tls.crt -days 365 \
 	-subj "//C=BD/ST=Dhaka/L=Dhaka/O=Golang/CN=localhost"
 
+jwt:
+	cd ./cert && \
+	openssl ecparam -genkey -name prime256v1 -noout -out private.pem && \
+	openssl ec -in private.pem -pubout -out public.pem
+
 deps:
 	go mod download
 

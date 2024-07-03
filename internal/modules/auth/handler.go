@@ -13,8 +13,10 @@ import (
 	"github.com/AxelTahmid/golang-starter/internal/utils/validate"
 )
 
-var v = validator.New()
-var svc = AuthService{}
+var (
+	v   = validator.New()
+	svc = AuthService{}
+)
 
 func (a AuthHandler) login(w http.ResponseWriter, r *http.Request) {
 	var req LoginRequest
@@ -46,7 +48,6 @@ func (a AuthHandler) login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	respond.Json(w, http.StatusOK, fetchedUser)
-
 }
 
 func (a AuthHandler) register(w http.ResponseWriter, r *http.Request) {
