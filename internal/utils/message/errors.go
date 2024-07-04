@@ -2,6 +2,7 @@ package message
 
 import "errors"
 
+//  errors
 var (
 	ErrBadRequest    = errors.New("error bad request")
 	ErrInternalError = errors.New("internal server error")
@@ -11,4 +12,10 @@ var (
 	ErrNoRecord = errors.New("no record found")
 
 	ErrPassOrUserIncorrect = errors.New("password or username is incorrect")
+)
+
+// success messages
+var (
+	SuccessLogin    = "user login successful ->"
+	SuccessRegister = "user register successful ->"
 )

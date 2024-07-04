@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -40,7 +41,10 @@ func (handler AuthHandler) login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	respond.Json(w, http.StatusOK, fetchedUser)
+	respond.Json(w, http.StatusOK, respond.Standard{
+		Message: fmt.Sprintf("%s %s", message.SuccessLogin, fetchedUser.Email),
+		Data:    fetchedUser,
+	})
 }
 
 func (handler AuthHandler) register(w http.ResponseWriter, r *http.Request) {
@@ -73,5 +77,7 @@ func (handler AuthHandler) register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	respond.Status(w, http.StatusCreated)
+	respond.Json(w, http.StatusCreated, respond.Standard{
+		Message: fmt.Sprintf("%s %s", message.SuccessRegister, req.Email),
+	})
 }

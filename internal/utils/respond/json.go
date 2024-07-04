@@ -9,13 +9,14 @@ import (
 )
 
 type Standard struct {
-	Data interface{} `json:"data"`
-	Meta Meta        `json:"meta,omitempty"`
+	Message string      `json:"message,omitempty"`
+	Data    interface{} `json:"data"`
+	Meta    Meta        `json:"meta,omitempty"`
 }
 
 type Meta struct {
-	Size  int `json:"size"`
-	Total int `json:"total"`
+	Size  int `json:"size,omitempty"`
+	Total int `json:"total,omitempty"`
 }
 
 func Json(w http.ResponseWriter, statusCode int, payload interface{}) {
