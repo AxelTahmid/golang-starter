@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v5"
@@ -11,14 +12,30 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func (s AuthService) GetUser(ctx context.Context, pool *pgxpool.Pool, email string) (UserEntity, error) {
+// exact order as in database
+type UserEntity struct {
+	Id        int       `json:"id"`
+	Name      string    `json:"name"`
+	Email     string    `json:"email"`
+	Password  string    `json:"password"`
+	Verified  bool      `json:"verified"`
+	Role      string    `json:"role"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+type UserModel struct {
+	pool *pgxpool.Pool
+}
+
+func (pg *UserModel) getOne(ctx context.Context, email string) (UserEntity, error) {
 	query := `SELECT * FROM users WHERE email = @userEmail;`
 
 	args := pgx.NamedArgs{
 		"userEmail": email,
 	}
 
-	row, err := pool.Query(ctx, query, args)
+	row, err := pg.pool.Query(ctx, query, args)
 	if err != nil {
 		return UserEntity{}, fmt.Errorf("unable to query row: %w", err)
 	}
@@ -34,7 +51,7 @@ func (s AuthService) GetUser(ctx context.Context, pool *pgxpool.Pool, email stri
 	return user, nil
 }
 
-func (s AuthService) InsertUser(ctx context.Context, pool *pgxpool.Pool, user RegisterRequest) error {
+func (pg *UserModel) insertOne(ctx context.Context, user RegisterRequest) error {
 	query := `INSERT INTO users (name, email, password) VALUES (@userName, @userEmail, @hashedPassword);`
 
 	args := pgx.NamedArgs{
@@ -43,7 +60,7 @@ func (s AuthService) InsertUser(ctx context.Context, pool *pgxpool.Pool, user Re
 		"hashedPassword": user.Password,
 	}
 
-	_, err := pool.Exec(ctx, query, args)
+	_, err := pg.pool.Exec(ctx, query, args)
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == pgerrcode.UniqueViolation {

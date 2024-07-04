@@ -2,15 +2,22 @@ package auth
 
 import (
 	"github.com/go-chi/chi/v5"
+	"github.com/go-playground/validator/v10"
 
 	"github.com/AxelTahmid/golang-starter/db"
 )
 
+type AuthHandler struct {
+	user UserModel
+}
+
+var v = validator.New()
+
 func Routes(pg *db.Postgres) chi.Router {
 	r := chi.NewRouter()
 
-	authHandler := AuthHandler{
-		postgres: pg,
+	authHandler := &AuthHandler{
+		user: UserModel{pool: pg.DB},
 	}
 
 	r.Post("/login", authHandler.login)

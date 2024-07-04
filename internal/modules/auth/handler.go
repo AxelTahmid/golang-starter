@@ -4,8 +4,6 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/go-playground/validator/v10"
-
 	"github.com/AxelTahmid/golang-starter/internal/utils/bcrypt"
 	"github.com/AxelTahmid/golang-starter/internal/utils/message"
 	"github.com/AxelTahmid/golang-starter/internal/utils/request"
@@ -13,12 +11,7 @@ import (
 	"github.com/AxelTahmid/golang-starter/internal/utils/validate"
 )
 
-var (
-	v   = validator.New()
-	svc = AuthService{}
-)
-
-func (a AuthHandler) login(w http.ResponseWriter, r *http.Request) {
+func (handler AuthHandler) login(w http.ResponseWriter, r *http.Request) {
 	var req LoginRequest
 
 	err := request.DecodeJSON(w, r, &req)
@@ -35,7 +28,7 @@ func (a AuthHandler) login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fetchedUser, err := svc.GetUser(r.Context(), a.postgres.DB, req.Email)
+	fetchedUser, err := handler.user.getOne(r.Context(), req.Email)
 	if err != nil {
 		respond.Error(w, http.StatusUnauthorized, message.ErrPassOrUserIncorrect)
 		return
@@ -50,7 +43,7 @@ func (a AuthHandler) login(w http.ResponseWriter, r *http.Request) {
 	respond.Json(w, http.StatusOK, fetchedUser)
 }
 
-func (a AuthHandler) register(w http.ResponseWriter, r *http.Request) {
+func (handler AuthHandler) register(w http.ResponseWriter, r *http.Request) {
 	var req RegisterRequest
 
 	err := request.DecodeJSON(w, r, &req)
@@ -74,7 +67,7 @@ func (a AuthHandler) register(w http.ResponseWriter, r *http.Request) {
 	req.Email = strings.ToLower(req.Email)
 	req.Password = hash
 
-	err = svc.InsertUser(r.Context(), a.postgres.DB, req)
+	err = handler.user.insertOne(r.Context(), req)
 	if err != nil {
 		respond.Error(w, http.StatusBadRequest, err)
 		return
