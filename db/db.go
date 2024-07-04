@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"log/slog"
-	"os"
 	"sync"
 
 	"github.com/jackc/pgx/v5"
@@ -41,10 +39,8 @@ func initConfig(conf config.Database) *pgxpool.Config {
 
 	dbConfig.AfterConnect = setDbTimeZone
 
-	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
-
 	dbConfig.ConnConfig.Tracer = &tracelog.TraceLog{
-		Logger:   NewLogger(logger.With("module", "pgx")),
+		Logger:   InitLogger(),
 		LogLevel: tracelog.LogLevelTrace,
 	}
 

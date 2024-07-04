@@ -22,14 +22,16 @@ type Server struct {
 	router *chi.Mux
 	db     *db.Postgres
 	tls    *tls.Config
+	log    *slog.Logger
 }
 
-func NewServer(c *config.Config, db *db.Postgres, t *tls.Config) *Server {
+func NewServer(c *config.Config, db *db.Postgres, t *tls.Config, l *slog.Logger) *Server {
 	server := &Server{
 		conf:   c,
 		router: chi.NewRouter(),
 		db:     db,
 		tls:    t,
+		log:    l,
 	}
 
 	server.routes()
