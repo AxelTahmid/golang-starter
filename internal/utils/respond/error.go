@@ -13,12 +13,11 @@ func write(w http.ResponseWriter, data []byte) {
 	}
 }
 
-func Errors(w http.ResponseWriter, statusCode int, errors []string) {
-	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(statusCode)
+func (rw *Writer) WithErrs(errors []string) {
+	rw.w.Header().Set("Content-Type", "application/problem+json")
 
 	if errors == nil {
-		write(w, nil)
+		write(rw.w, nil)
 		return
 	}
 
@@ -34,16 +33,15 @@ func Errors(w http.ResponseWriter, statusCode int, errors []string) {
 		return
 	}
 
-	write(w, data)
+	write(rw.w, data)
 }
 
-func Error(w http.ResponseWriter, statusCode int, message error) {
-	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(statusCode)
+func (rw *Writer) WithErr(message error) {
+	rw.w.Header().Set("Content-Type", "application/problem+json")
 
 	var p map[string]string
 	if message == nil {
-		write(w, nil)
+		write(rw.w, nil)
 		return
 	}
 
@@ -59,5 +57,5 @@ func Error(w http.ResponseWriter, statusCode int, message error) {
 		return
 	}
 
-	write(w, data)
+	write(rw.w, data)
 }

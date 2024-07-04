@@ -17,7 +17,7 @@ func (handler AuthHandler) login(w http.ResponseWriter, r *http.Request) {
 
 	err := request.DecodeJSON(w, r, &req)
 	if err != nil {
-		respond.Error(w, http.StatusBadRequest, message.ErrBadRequest)
+		respond.Write(w).Status(http.StatusBadRequest).WithErr(message.ErrBadRequest)
 		return
 	}
 
@@ -25,23 +25,23 @@ func (handler AuthHandler) login(w http.ResponseWriter, r *http.Request) {
 
 	validationErrs := validate.Validate(v, req)
 	if validationErrs != nil {
-		respond.Errors(w, http.StatusBadRequest, validationErrs)
+		respond.Write(w).Status(http.StatusBadRequest).WithErrs(validationErrs)
 		return
 	}
 
 	fetchedUser, err := handler.user.getOne(r.Context(), req.Email)
 	if err != nil {
-		respond.Error(w, http.StatusUnauthorized, message.ErrPassOrUserIncorrect)
+		respond.Write(w).Status(http.StatusUnauthorized).WithErr(message.ErrPassOrUserIncorrect)
 		return
 	}
 
 	isPasswordValid := bcrypt.VerifyPassword(req.Password, fetchedUser.Password)
 	if !isPasswordValid {
-		respond.Error(w, http.StatusUnauthorized, message.ErrPassOrUserIncorrect)
+		respond.Write(w).Status(http.StatusUnauthorized).WithErr(message.ErrPassOrUserIncorrect)
 		return
 	}
 
-	respond.Json(w, http.StatusOK, respond.Standard{
+	respond.Write(w).Status(http.StatusOK).WithJson(respond.Standard{
 		Message: fmt.Sprintf("%s %s", message.SuccessLogin, fetchedUser.Email),
 		Data:    fetchedUser,
 	})
@@ -52,19 +52,19 @@ func (handler AuthHandler) register(w http.ResponseWriter, r *http.Request) {
 
 	err := request.DecodeJSON(w, r, &req)
 	if err != nil {
-		respond.Error(w, http.StatusBadRequest, message.ErrBadRequest)
+		respond.Write(w).Status(http.StatusBadRequest).WithErr(message.ErrBadRequest)
 		return
 	}
 
 	validationErrs := validate.Validate(v, req)
 	if validationErrs != nil {
-		respond.Errors(w, http.StatusBadRequest, validationErrs)
+		respond.Write(w).Status(http.StatusBadRequest).WithErrs(validationErrs)
 		return
 	}
 
 	hash, err := bcrypt.HashPassword(req.Password)
 	if err != nil {
-		respond.Error(w, http.StatusBadRequest, err)
+		respond.Write(w).Status(http.StatusBadRequest).WithErr(err)
 		return
 	}
 
@@ -73,11 +73,11 @@ func (handler AuthHandler) register(w http.ResponseWriter, r *http.Request) {
 
 	err = handler.user.insertOne(r.Context(), req)
 	if err != nil {
-		respond.Error(w, http.StatusBadRequest, err)
+		respond.Write(w).Status(http.StatusBadRequest).WithErr(err)
 		return
 	}
 
-	respond.Json(w, http.StatusCreated, respond.Standard{
+	respond.Write(w).Status(http.StatusCreated).WithJson(respond.Standard{
 		Message: fmt.Sprintf("%s %s", message.SuccessRegister, req.Email),
 	})
 }

@@ -8,20 +8,8 @@ import (
 	"github.com/AxelTahmid/golang-starter/internal/utils/message"
 )
 
-type Standard struct {
-	Message string      `json:"message,omitempty"`
-	Data    interface{} `json:"data"`
-	Meta    Meta        `json:"meta,omitempty"`
-}
-
-type Meta struct {
-	Size  int `json:"size,omitempty"`
-	Total int `json:"total,omitempty"`
-}
-
-func Json(w http.ResponseWriter, statusCode int, payload interface{}) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(statusCode)
+func (rw *Writer) WithJson(payload interface{}) {
+	rw.w.Header().Set("Content-Type", "application/json")
 
 	if payload == nil {
 		return
@@ -30,19 +18,44 @@ func Json(w http.ResponseWriter, statusCode int, payload interface{}) {
 	data, err := json.Marshal(payload)
 	if err != nil {
 		log.Println(err)
-		Error(w, http.StatusInternalServerError, message.ErrInternalError)
+		jsonErr(rw.w, http.StatusInternalServerError, message.ErrInternalError)
 		return
 	}
 
 	if string(data) == "null" {
-		_, _ = w.Write([]byte("[]"))
+		_, _ = rw.w.Write([]byte("[]"))
 		return
 	}
 
-	_, err = w.Write(data)
+	_, err = rw.w.Write(data)
 	if err != nil {
 		log.Println(err)
-		Error(w, http.StatusInternalServerError, message.ErrInternalError)
+		jsonErr(rw.w, http.StatusInternalServerError, message.ErrInternalError)
 		return
 	}
+}
+
+func jsonErr(w http.ResponseWriter, statusCode int, message error) {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(statusCode)
+
+	var p map[string]string
+	if message == nil {
+		write(w, nil)
+		return
+	}
+
+	p = map[string]string{
+		"message": message.Error(),
+	}
+	data, err := json.Marshal(p)
+	if err != nil {
+		log.Println(err)
+	}
+
+	if string(data) == "null" {
+		return
+	}
+
+	write(w, data)
 }
