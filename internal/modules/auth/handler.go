@@ -23,7 +23,7 @@ func (handler AuthHandler) login(w http.ResponseWriter, r *http.Request) {
 
 	req.Email = strings.ToLower(req.Email)
 
-	validationErrs := validate.Validate(v, req)
+	validationErrs := validate.Check(handler.v, req)
 	if validationErrs != nil {
 		respond.Write(w).Status(http.StatusBadRequest).WithErrs(validationErrs)
 		return
@@ -56,7 +56,7 @@ func (handler AuthHandler) register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	validationErrs := validate.Validate(v, req)
+	validationErrs := validate.Check(handler.v, req)
 	if validationErrs != nil {
 		respond.Write(w).Status(http.StatusBadRequest).WithErrs(validationErrs)
 		return

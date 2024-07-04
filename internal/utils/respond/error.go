@@ -24,6 +24,7 @@ func (rw *Writer) WithErrs(errors []string) {
 	p := map[string][]string{
 		"message": errors,
 	}
+
 	data, err := json.Marshal(p)
 	if err != nil {
 		log.Println(err)

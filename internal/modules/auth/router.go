@@ -9,15 +9,15 @@ import (
 
 type AuthHandler struct {
 	user UserModel
+	v    *validator.Validate
 }
-
-var v = validator.New()
 
 func Routes(pg *db.Postgres) chi.Router {
 	r := chi.NewRouter()
 
 	authHandler := &AuthHandler{
 		user: UserModel{pool: pg.DB},
+		v:    validator.New(),
 	}
 
 	r.Post("/login", authHandler.login)
