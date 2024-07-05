@@ -29,7 +29,7 @@ type UserModel struct {
 }
 
 func (pg *UserModel) getOne(ctx context.Context, email string) (UserEntity, error) {
-	query := `SELECT * FROM users WHERE email = @userEmail;`
+	query := "SELECT * FROM users WHERE email = @userEmail;"
 
 	args := pgx.NamedArgs{
 		"userEmail": email,
@@ -52,7 +52,7 @@ func (pg *UserModel) getOne(ctx context.Context, email string) (UserEntity, erro
 }
 
 func (pg *UserModel) insertOne(ctx context.Context, user RegisterRequest) error {
-	query := `INSERT INTO users (name, email, password) VALUES (@userName, @userEmail, @hashedPassword);`
+	query := "INSERT INTO users (name, email, password) VALUES (@userName, @userEmail, @hashedPassword);"
 
 	args := pgx.NamedArgs{
 		"userName":       user.Name,
