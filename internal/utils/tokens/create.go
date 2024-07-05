@@ -8,8 +8,8 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-// CreateToken creates a new access and refresh token, should never hold user state, only identifier
-func CreateToken(user UserClaims) (Tokens, error) {
+// IssueToken creates a new access and refresh token, should never hold user state, only identifier
+func IssueToken(user UserClaims) (Tokens, error) {
 	if user.Id == 0 && user.Email == "" && user.Role == "" {
 		return Tokens{}, errors.New("user cannot be empty")
 	}
