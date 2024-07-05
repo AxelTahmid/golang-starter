@@ -9,6 +9,7 @@ import (
 	"github.com/AxelTahmid/golang-starter/internal/utils/message"
 	"github.com/AxelTahmid/golang-starter/internal/utils/request"
 	"github.com/AxelTahmid/golang-starter/internal/utils/respond"
+	"github.com/AxelTahmid/golang-starter/internal/utils/tokens"
 	"github.com/AxelTahmid/golang-starter/internal/utils/validate"
 )
 
@@ -43,9 +44,19 @@ func (handler AuthHandler) login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	tokens, err := tokens.CreateToken(tokens.UserClaims{
+		Id:    fetchedUser.Id,
+		Email: fetchedUser.Email,
+		Role:  fetchedUser.Role,
+	})
+	if err != nil {
+		reply.Status(http.StatusInternalServerError).WithErr(err)
+		return
+	}
+
 	reply.Status(http.StatusOK).WithJson(respond.Standard{
 		Message: fmt.Sprintf("%s %s", message.SuccessLogin, fetchedUser.Email),
-		Data:    fetchedUser,
+		Data:    LoginResponse{tokens},
 	})
 }
 

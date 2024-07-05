@@ -1,5 +1,9 @@
 package auth
 
+import (
+	"github.com/AxelTahmid/golang-starter/internal/utils/tokens"
+)
+
 type (
 	LoginRequest struct {
 		Email    string `json:"email" validate:"required,email"`
@@ -13,6 +17,6 @@ type (
 	}
 
 	LoginResponse struct {
-		Token string `json:"token"`
+		tokens.Tokens
 	}
 )
