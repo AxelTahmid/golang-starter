@@ -8,13 +8,7 @@ import (
 
 func ParseToken(token string) (*jwt.RegisteredClaims, error) {
 	parsedToken, err := jwt.ParseWithClaims(token, &jwt.RegisteredClaims{}, func(token *jwt.Token) (interface{}, error) {
-		secret, err := jwt.ParseECPublicKeyFromPEM(publicKey)
-		if err != nil {
-			log.Printf("error parsing pem key: %v", err)
-			return "", errParsingPemKey
-		}
-
-		return secret, nil
+		return publicKey, nil
 	})
 
 	if err != nil {

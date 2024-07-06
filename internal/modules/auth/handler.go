@@ -115,7 +115,7 @@ func (handler AuthHandler) me(w http.ResponseWriter, r *http.Request) {
 	}
 
 	reply.Status(http.StatusOK).WithJson(respond.Standard{
-		Message: fmt.Sprintf("%s %s", message.SuccessLogin, fetchedUser.Email),
+		Message: message.SuccessMe,
 		Data:    fetchedUser,
 	})
 }

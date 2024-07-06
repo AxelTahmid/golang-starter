@@ -19,4 +19,5 @@ var (
 var (
 	SuccessLogin    = "user login successful ->"
 	SuccessRegister = "user register successful ->"
+	SuccessMe       = "user fetched successfully"
 )

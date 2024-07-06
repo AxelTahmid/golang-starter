@@ -7,6 +7,7 @@ type Config struct {
 	Cors
 	Secure
 	Database
+	Jwt
 }
 
 var (
@@ -22,6 +23,7 @@ func New() *Config {
 			Cors:     corsConfig(),
 			Secure:   secureConfig(),
 			Database: dBConfig(),
+			Jwt:      jwtConfig(),
 		}
 	},
 	)

@@ -8,10 +8,12 @@ import (
 	"os"
 	"time"
 
+	"github.com/lmittmann/tint"
+
 	"github.com/AxelTahmid/golang-starter/config"
 	"github.com/AxelTahmid/golang-starter/db"
 	"github.com/AxelTahmid/golang-starter/internal/server"
-	"github.com/lmittmann/tint"
+	"github.com/AxelTahmid/golang-starter/internal/utils/tokens"
 )
 
 func main() {
@@ -28,11 +30,11 @@ func main() {
 				TimeFormat: time.Kitchen,
 			}),
 		)
-		slog.SetDefault(logger)
 	} else {
 		logger = slog.New(slog.NewJSONHandler(os.Stdout, nil))
-		slog.SetDefault(logger)
 	}
+
+	slog.SetDefault(logger)
 
 	serverTLSCert, err := tls.LoadX509KeyPair(conf.Server.TLSCertPath, conf.Server.TLSKeyPath)
 	if err != nil {
@@ -52,6 +54,8 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error connecting to database: %v", err)
 	}
+
+	tokens.SetJwtKeyPair(conf.Jwt)
 
 	server := server.NewServer(conf, dbconn, tlsConfig, logger)
 	server.Start(ctx)

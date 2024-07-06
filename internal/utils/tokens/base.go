@@ -1,10 +1,13 @@
 package tokens
 
 import (
+	"crypto/ecdsa"
 	"errors"
 	"log"
 	"os"
+	"sync"
 
+	"github.com/AxelTahmid/golang-starter/config"
 	"github.com/golang-jwt/jwt/v5"
 )
 
@@ -29,9 +32,11 @@ type (
 const AuthReqCtxKey jwtAuthKey = "authUser"
 
 var (
+	once sync.Once
+
 	// global secret
-	privateKey = []byte(os.Getenv("JWT_PVT_KEY"))
-	publicKey = []byte(os.Getenv("JWT_PUB_KEY"))
+	privateKey *ecdsa.PrivateKey
+	publicKey  *ecdsa.PublicKey
 
 	// errors
 	errTokenExpired     = errors.New("token expired")
@@ -39,41 +44,39 @@ var (
 	errParsingToken     = errors.New("error parsing token")
 	errUserEmpty        = errors.New("user cannot be empty")
 	errTokenCreate      = errors.New("error creating token")
-	errParsingPemKey    = errors.New("error parsing pem key")
 )
+
+// function to parse the private and public keys
+func SetJwtKeyPair(conf config.Jwt) {
+
+	once.Do(func() {
+		jwtPrivateKey, err := os.ReadFile(conf.JwtPvtKeyPath)
+		if err != nil {
+			log.Fatalf("error reading private key: %v", err)
+		}
+
+		privateKey, err = jwt.ParseECPrivateKeyFromPEM(jwtPrivateKey)
+		if err != nil {
+			log.Fatalf("error parsing private key: %v", err)
+		}
+
+		jwtPublicKey, err := os.ReadFile(conf.JwtPubKeyPath)
+		if err != nil {
+			log.Fatalf("error reading public key: %v", err)
+		}
+
+		publicKey, err = jwt.ParseECPublicKeyFromPEM(jwtPublicKey)
+		if err != nil {
+			log.Fatalf("error parsing public key: %v", err)
+		}
+
+		log.Println("Parsed private and public keys for JWT")
+	})
+
+}
 
 func newToken(claims jwt.RegisteredClaims) (string, error) {
 	accessToken := jwt.NewWithClaims(jwt.SigningMethodES256, claims)
 
-	secret, err := jwt.ParseECPrivateKeyFromPEM(privateKey)
-	if err != nil {
-		log.Printf("error parsing pem key: %v", err)
-		return "", errParsingPemKey
-	}
-
-	return accessToken.SignedString(secret)
+	return accessToken.SignedString(privateKey)
 }
-
-// func pemKeyPair(key *ecdsa.PrivateKey) (privKeyPEM []byte, pubKeyPEM []byte, err error) {
-// 	der, err := x509.MarshalECPrivateKey(key)
-// 	if err != nil {
-// 		return nil, nil, err
-// 	}
-
-// 	privKeyPEM = pem.EncodeToMemory(&pem.Block{
-// 		Type:  "EC PRIVATE KEY",
-// 		Bytes: der,
-// 	})
-
-// 	der, err = x509.MarshalPKIXPublicKey(key.Public())
-// 	if err != nil {
-// 		return nil, nil, err
-// 	}
-
-// 	pubKeyPEM = pem.EncodeToMemory(&pem.Block{
-// 		Type:  "EC PUBLIC KEY",
-// 		Bytes: der,
-// 	})
-
-// 	return
-// }
