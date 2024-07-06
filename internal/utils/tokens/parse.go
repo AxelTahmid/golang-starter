@@ -2,14 +2,19 @@ package tokens
 
 import (
 	"log"
-	"os"
 
 	"github.com/golang-jwt/jwt/v5"
 )
 
 func ParseToken(token string) (*jwt.RegisteredClaims, error) {
 	parsedToken, err := jwt.ParseWithClaims(token, &jwt.RegisteredClaims{}, func(token *jwt.Token) (interface{}, error) {
-		return []byte(os.Getenv("TOKEN_SECRET")), nil
+		secret, err := jwt.ParseECPublicKeyFromPEM(publicKey)
+		if err != nil {
+			log.Printf("error parsing pem key: %v", err)
+			return "", errParsingPemKey
+		}
+
+		return secret, nil
 	})
 
 	if err != nil {

@@ -12,8 +12,8 @@ tls:
 
 jwt:
 	cd ./cert && \
-	openssl ecparam -genkey -name prime256v1 -noout -out private.pem && \
-	openssl ec -in private.pem -pubout -out public.pem
+	openssl ecparam -genkey -name prime256v1 -noout -out jwt-pvt.pem && \
+	openssl ec -in jwt-pvt.pem -pubout -out jwt-pub.pem
 
 deps:
 	go mod download

@@ -15,14 +15,21 @@ func Authenticated(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		reply := respond.Write(w)
 
-		// We expect the "Authorization" header to be "BEARER {TOKEN}"
-		authHeaderParts := strings.Split(r.Header.Get("Authorization"), " ")
+		// we expect the "Authorization" header to be present in the request
+		authHeader := r.Header.Get("Authorization")
+		if authHeader == "" {
+			reply.Status(http.StatusUnauthorized).WithErr(message.ErrUnauthorized)
+			return
+		}
+
+		// we expect the "Authorization" header to be "BEARER {TOKEN}"
+		authHeaderParts := strings.Split(authHeader, " ")
 		if len(authHeaderParts) != 2 || authHeaderParts[0] != "Bearer" {
 			reply.Status(http.StatusUnauthorized).WithErr(message.ErrBadTokenFormat)
 			return
 		}
 
-		// Parse the JWT string with claims and store the result in `claims`.
+		// parse the JWT string with claims and store the result in `claims`.
 		claims, err := tokens.ParseToken(authHeaderParts[1])
 
 		if err != nil {
@@ -30,7 +37,7 @@ func Authenticated(next http.Handler) http.Handler {
 			return
 		}
 
-		// Add parsed token data to the request context
+		// add parsed token data to the request context
 		r = r.WithContext(context.WithValue(r.Context(), tokens.AuthReqCtxKey, claims))
 
 		next.ServeHTTP(w, r)
@@ -41,14 +48,15 @@ func AuthenticateAdminOnly(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		reply := respond.Write(w)
 
+		// get the claims from the request context
 		claims, ok := r.Context().Value(tokens.AuthReqCtxKey).(*jwt.RegisteredClaims)
 		if !ok {
 			reply.Status(http.StatusBadRequest).WithErr(message.ErrBadRequest)
 			return
 		}
 
+		// check if the role is "admin"
 		role := claims.Audience
-
 		if role[0] != "admin" {
 			reply.Status(http.StatusUnauthorized).WithErr(message.ErrUnauthorized)
 			return
