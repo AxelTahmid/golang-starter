@@ -1,7 +1,7 @@
 package tokens
 
 import (
-	"errors"
+	"log"
 	"strconv"
 	"time"
 
@@ -11,7 +11,7 @@ import (
 // IssueToken creates a new access and refresh token, should never hold user state, only identifier
 func IssueToken(user UserClaims) (Tokens, error) {
 	if user.Id == 0 && user.Email == "" && user.Role == "" {
-		return Tokens{}, errors.New("user cannot be empty")
+		return Tokens{}, errUserEmpty
 	}
 
 	var (
@@ -30,7 +30,8 @@ func IssueToken(user UserClaims) (Tokens, error) {
 
 	tokens.AccessToken, err = newToken(claims)
 	if err != nil {
-		return Tokens{}, errors.New("error creating access token")
+		log.Printf("error creating access token -> %v", err)
+		return Tokens{}, errTokenCreate
 	}
 
 	// longer for refresh token
@@ -38,7 +39,8 @@ func IssueToken(user UserClaims) (Tokens, error) {
 
 	tokens.RefreshToken, err = newToken(claims)
 	if err != nil {
-		return Tokens{}, errors.New("error creating refresh token")
+		log.Printf("error creating refresh token -> %v", err)
+		return Tokens{}, errTokenCreate
 	}
 
 	return tokens, nil

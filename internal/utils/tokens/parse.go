@@ -1,50 +1,58 @@
 package tokens
 
-// func parseAccessToken(accessToken string) *UserClaims {
-// 	parsedAccessToken, _ := jwt.ParseWithClaims(accessToken, &UserClaims{}, func(token *jwt.Token) (interface{}, error) {
-// 		return []byte(os.Getenv("TOKEN_SECRET")), nil
-// 	})
+import (
+	"log"
+	"os"
 
-// 	return parsedAccessToken.Claims.(*UserClaims)
-// }
+	"github.com/golang-jwt/jwt/v5"
+)
 
-// func parseRefreshToken(refreshToken string) *jwt.RegisteredClaims {
-// 	parsedRefreshToken, _ := jwt.ParseWithClaims(refreshToken, &jwt.RegisteredClaims{}, func(token *jwt.Token) (interface{}, error) {
-// 		return []byte(os.Getenv("TOKEN_SECRET")), nil
-// 	})
+func ParseToken(token string) (*jwt.RegisteredClaims, error) {
+	parsedToken, err := jwt.ParseWithClaims(token, &jwt.RegisteredClaims{}, func(token *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("TOKEN_SECRET")), nil
+	})
 
-// 	return parsedRefreshToken.Claims.(*jwt.RegisteredClaims)
-// }
+	if err != nil {
+		if err == jwt.ErrSignatureInvalid {
+			log.Printf("invalid token signature -> %v", err)
+			return nil, errSignatureInvalid
+		}
+		log.Printf("error parsing token -> %v", err)
+		return nil, errParsingToken
+	}
 
-// func VerifyTokens(tokens Tokens) error {
+	if !parsedToken.Valid {
+		log.Printf("expired token -> %v", err)
+		return nil, errTokenExpired
+	}
+
+	claims, ok := parsedToken.Claims.(*jwt.RegisteredClaims)
+
+	if !ok {
+		log.Println("error parsing claims")
+		return nil, errParsingToken
+	}
+
+	return claims, nil
+}
+
+// func RefreshTokens(tokens Tokens) error {
 // 	var err error
 
-// 	userClaims := parseAccessToken(tokens.AccessToken)
-// 	refreshClaims := parseRefreshToken(tokens.RefreshToken)
-
-// 	// token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-// 	// 	return secretKey, nil
-// 	// })
-
-// 	// if err != nil {
-// 	// 	return err
-// 	// }
-
-// 	// if !token.Valid {
-// 	// 	return fmt.Errorf("invalid token")
-// 	// }
+// 	accessToken, accErr := ParseToken(tokens.AccessToken)
+// 	refreshClaims, refErr := ParseToken(tokens.RefreshToken)
 
 // 	// refresh token is expired
-// 	if refreshClaims.Valid() != nil {
-// 		tokens.RefreshToken, err = newRefreshToken(*refreshClaims)
+// 	if refErr != nil {
+// 		refreshClaims, err = newToken(*refreshClaims)
 // 		if err != nil {
 // 			log.Fatal("error creating refresh token")
 // 		}
 // 	}
 
 // 	// access token is expired
-// 	if userClaims.RegisteredClaims.Valid() != nil && refreshClaims.Valid() == nil {
-// 		tokens.AccessToken, err = newToken(*userClaims)
+// 	if accErr != nil && refErr == nil {
+// 		accessToken, err = newToken(*accessClaims)
 // 		if err != nil {
 // 			log.Fatal("error creating access token")
 // 		}

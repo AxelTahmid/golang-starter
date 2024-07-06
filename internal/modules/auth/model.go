@@ -16,8 +16,8 @@ import (
 type UserEntity struct {
 	Id        int       `json:"id"`
 	Name      string    `json:"name"`
-	Email     string    `json:"email"`
-	Password  string    `json:"password"`
+	Email     string    `json:"email"`	
+	Password  string    `json:"-"`
 	Verified  bool      `json:"verified"`
 	Role      string    `json:"role"`
 	CreatedAt time.Time `json:"created_at"`
