@@ -12,19 +12,20 @@ func ParseToken(token string) (*jwt.RegisteredClaims, error) {
 	})
 
 	if err != nil {
+		log.Printf("ParseWithClaims errored -> %v", err)
 		return nil, err
 	}
 
 	if !parsedToken.Valid {
-		log.Printf("expired token -> %v", err)
-		return nil, errTokenExpired
+		log.Printf("invalid token -> %v", err)
+		return nil, errTokenInvalid
 	}
 
 	claims, ok := parsedToken.Claims.(*jwt.RegisteredClaims)
 
 	if !ok {
 		log.Println("error parsing claims")
-		return nil, errParsingToken
+		return nil, errParsingClaims
 	}
 
 	return claims, nil

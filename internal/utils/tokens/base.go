@@ -39,11 +39,10 @@ var (
 	publicKey  *ecdsa.PublicKey
 
 	// errors
-	errTokenExpired     = errors.New("token has expired")
-	errSignatureInvalid = errors.New("invalid token signature")
-	errParsingToken     = errors.New("error parsing token")
-	errUserEmpty        = errors.New("user cannot be empty")
-	errTokenCreate      = errors.New("error creating token")
+	errTokenInvalid  = errors.New("token is invalid")
+	errParsingClaims = errors.New("error parsing claims")
+	errUserEmpty     = errors.New("user cannot be empty")
+	errTokenCreate   = errors.New("error creating token")
 )
 
 // function to parse the private and public keys
