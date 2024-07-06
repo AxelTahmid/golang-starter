@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/golang-jwt/jwt/v5"
+
 	"github.com/AxelTahmid/golang-starter/internal/utils/bcrypt"
 	"github.com/AxelTahmid/golang-starter/internal/utils/message"
 	"github.com/AxelTahmid/golang-starter/internal/utils/request"
@@ -94,5 +96,26 @@ func (handler AuthHandler) register(w http.ResponseWriter, r *http.Request) {
 
 	reply.Status(http.StatusCreated).WithJson(respond.Standard{
 		Message: fmt.Sprintf("%s %s", message.SuccessRegister, req.Email),
+	})
+}
+
+func (handler AuthHandler) me(w http.ResponseWriter, r *http.Request) {
+	reply := respond.Write(w)
+
+	userClaim, ok := r.Context().Value(t.AuthReqCtxKey).(*jwt.RegisteredClaims)
+	if !ok {
+		respond.Write(w).Status(http.StatusUnauthorized).WithErr(message.ErrUnauthorized)
+		return
+	}
+
+	fetchedUser, err := handler.user.getOne(r.Context(), userClaim.Subject)
+	if err != nil {
+		reply.Status(http.StatusUnauthorized).WithErr(message.ErrNoRecord)
+		return
+	}
+
+	reply.Status(http.StatusOK).WithJson(respond.Standard{
+		Message: fmt.Sprintf("%s %s", message.SuccessLogin, fetchedUser.Email),
+		Data:    fetchedUser,
 	})
 }

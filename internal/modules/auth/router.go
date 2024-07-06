@@ -5,6 +5,7 @@ import (
 	"github.com/go-playground/validator/v10"
 
 	"github.com/AxelTahmid/golang-starter/db"
+	"github.com/AxelTahmid/golang-starter/internal/middlewares"
 )
 
 type AuthHandler struct {
@@ -23,7 +24,11 @@ func Routes(pg *db.Postgres) chi.Router {
 	r.Post("/login", authHandler.login)
 	r.Post("/register", authHandler.register)
 	// r.Post("/refresh", authHandler.refresh)
-	// r.Post("/me", authHandler.me)
+
+	r.Group(func(r chi.Router) {
+		r.Use(middlewares.Authenticated)
+		r.Get("/me", authHandler.me)
+	})
 
 	return r
 }

@@ -11,10 +11,6 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-type jwtAuthKey string
-
-const AuthUserKey jwtAuthKey = "authUser"
-
 func Authenticated(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		reply := respond.Write(w)
@@ -35,7 +31,7 @@ func Authenticated(next http.Handler) http.Handler {
 		}
 
 		// Add parsed token data to the request context
-		r = r.WithContext(context.WithValue(r.Context(), AuthUserKey, claims))
+		r = r.WithContext(context.WithValue(r.Context(), tokens.AuthReqCtxKey, claims))
 
 		next.ServeHTTP(w, r)
 	})
@@ -43,9 +39,18 @@ func Authenticated(next http.Handler) http.Handler {
 
 func AuthenticateAdminOnly(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		_, ok := r.Context().Value(AuthUserKey).(*jwt.RegisteredClaims)
+		reply := respond.Write(w)
+
+		claims, ok := r.Context().Value(tokens.AuthReqCtxKey).(*jwt.RegisteredClaims)
 		if !ok {
-			respond.Write(w).Status(http.StatusUnauthorized).WithErr(message.ErrUnauthorized)
+			reply.Status(http.StatusBadRequest).WithErr(message.ErrBadRequest)
+			return
+		}
+
+		role := claims.Audience
+
+		if role[0] != "admin" {
+			reply.Status(http.StatusUnauthorized).WithErr(message.ErrUnauthorized)
 			return
 		}
 

@@ -21,6 +21,10 @@ type UserClaims struct {
 // jwt.ParseECPublicKeyFromPEM()
 // SigningMethodES256
 
+type jwtAuthKey string
+
+const AuthReqCtxKey jwtAuthKey = "authUser"
+
 type Tokens struct {
 	AccessToken  string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`
