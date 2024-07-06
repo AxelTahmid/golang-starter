@@ -12,12 +12,7 @@ func ParseToken(token string) (*jwt.RegisteredClaims, error) {
 	})
 
 	if err != nil {
-		if err == jwt.ErrSignatureInvalid {
-			log.Printf("invalid token signature -> %v", err)
-			return nil, errSignatureInvalid
-		}
-		log.Printf("error parsing token -> %v", err)
-		return nil, errParsingToken
+		return nil, err
 	}
 
 	if !parsedToken.Valid {

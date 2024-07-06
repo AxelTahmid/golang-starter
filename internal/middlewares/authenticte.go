@@ -33,7 +33,7 @@ func Authenticated(next http.Handler) http.Handler {
 		claims, err := tokens.ParseToken(authHeaderParts[1])
 
 		if err != nil {
-			reply.Status(http.StatusBadRequest).WithErr(message.ErrBadRequest)
+			reply.Status(http.StatusBadRequest).WithErr(err)
 			return
 		}
 

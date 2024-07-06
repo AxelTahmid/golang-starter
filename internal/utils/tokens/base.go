@@ -39,7 +39,7 @@ var (
 	publicKey  *ecdsa.PublicKey
 
 	// errors
-	errTokenExpired     = errors.New("token expired")
+	errTokenExpired     = errors.New("token has expired")
 	errSignatureInvalid = errors.New("invalid token signature")
 	errParsingToken     = errors.New("error parsing token")
 	errUserEmpty        = errors.New("user cannot be empty")
