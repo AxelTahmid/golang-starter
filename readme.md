@@ -1,15 +1,27 @@
 ## TODOs
 
--   Database connectivity - pgxpool
--   Request Validation - validator/v10
+Things yet to add
+
 -   Docgen in .md for routes
 
 ## Get Started
 
-Generate TLS cert for serving
+Copy `.env.example` to `.env` to get started & provide appropiate values
+
+```sh
+cp .env.example .env
+```
+
+Generate TLS cert for serving https locally
 
 ```sh
 make tls
+```
+
+Generate ECDSA public-private key pair for JWT Auth
+
+```sh
+make jwt
 ```
 
 install & clean dependencies
