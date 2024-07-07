@@ -5,10 +5,9 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/AxelTahmid/golang-starter/internal/utils/jwt"
 	"github.com/AxelTahmid/golang-starter/internal/utils/message"
 	"github.com/AxelTahmid/golang-starter/internal/utils/respond"
-	"github.com/AxelTahmid/golang-starter/internal/utils/tokens"
-	"github.com/golang-jwt/jwt/v5"
 )
 
 func Authenticated(next http.Handler) http.Handler {
@@ -30,7 +29,7 @@ func Authenticated(next http.Handler) http.Handler {
 		}
 
 		// parse the JWT string with claims and store the result in `claims`.
-		claims, err := tokens.ParseToken(authHeaderParts[1])
+		claims, err := jwt.ParseToken(authHeaderParts[1])
 
 		if err != nil {
 			reply.Status(http.StatusBadRequest).WithErr(err)
@@ -38,7 +37,7 @@ func Authenticated(next http.Handler) http.Handler {
 		}
 
 		// add parsed token data to the request context
-		r = r.WithContext(context.WithValue(r.Context(), tokens.AuthReqCtxKey, claims))
+		r = r.WithContext(context.WithValue(r.Context(), jwt.AuthReqCtxKey, claims))
 
 		next.ServeHTTP(w, r)
 	})
@@ -49,7 +48,7 @@ func AuthenticateAdminOnly(next http.Handler) http.Handler {
 		reply := respond.Write(w)
 
 		// get the claims from the request context
-		claims, ok := r.Context().Value(tokens.AuthReqCtxKey).(*jwt.RegisteredClaims)
+		claims, ok := jwt.ParseClaimsCtx(r.Context())
 		if !ok {
 			reply.Status(http.StatusBadRequest).WithErr(message.ErrBadRequest)
 			return

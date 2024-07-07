@@ -5,13 +5,11 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/golang-jwt/jwt/v5"
-
 	"github.com/AxelTahmid/golang-starter/internal/utils/bcrypt"
+	"github.com/AxelTahmid/golang-starter/internal/utils/jwt"
 	"github.com/AxelTahmid/golang-starter/internal/utils/message"
 	"github.com/AxelTahmid/golang-starter/internal/utils/request"
 	"github.com/AxelTahmid/golang-starter/internal/utils/respond"
-	t "github.com/AxelTahmid/golang-starter/internal/utils/tokens"
 	"github.com/AxelTahmid/golang-starter/internal/utils/validate"
 )
 
@@ -46,7 +44,7 @@ func (handler AuthHandler) login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tokens, err := t.IssueToken(t.UserClaims{
+	tokens, err := jwt.IssueToken(jwt.UserClaims{
 		Id:    fetchedUser.Id,
 		Email: fetchedUser.Email,
 		Role:  fetchedUser.Role,
@@ -101,14 +99,15 @@ func (handler AuthHandler) register(w http.ResponseWriter, r *http.Request) {
 
 func (handler AuthHandler) me(w http.ResponseWriter, r *http.Request) {
 	reply := respond.Write(w)
+	ctx := r.Context()
 
-	userClaim, ok := r.Context().Value(t.AuthReqCtxKey).(*jwt.RegisteredClaims)
+	userClaim, ok := jwt.ParseClaimsCtx(ctx)
 	if !ok {
 		respond.Write(w).Status(http.StatusUnauthorized).WithErr(message.ErrUnauthorized)
 		return
 	}
 
-	fetchedUser, err := handler.user.getOne(r.Context(), userClaim.Subject)
+	fetchedUser, err := handler.user.getOne(ctx, userClaim.Subject)
 	if err != nil {
 		reply.Status(http.StatusUnauthorized).WithErr(message.ErrNoRecord)
 		return

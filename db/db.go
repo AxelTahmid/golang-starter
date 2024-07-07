@@ -22,7 +22,7 @@ var (
 	pgOnce sync.Once
 )
 
-func initConfig(conf config.Database) *pgxpool.Config {
+func setDefaults(conf config.Database) *pgxpool.Config {
 
 	dbConfig, err := pgxpool.ParseConfig(conf.Url)
 
@@ -51,7 +51,7 @@ func CreatePool(ctx context.Context, conf config.Database) (*Postgres, error) {
 	var err error
 
 	pgOnce.Do(func() {
-		dbPool, dbErr := pgxpool.NewWithConfig(ctx, initConfig(conf))
+		dbPool, dbErr := pgxpool.NewWithConfig(ctx, setDefaults(conf))
 		if dbErr != nil {
 			err = dbErr
 		}

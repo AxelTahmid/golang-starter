@@ -1,6 +1,7 @@
-package tokens
+package jwt
 
 import (
+	"context"
 	"log"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -29,6 +30,16 @@ func ParseToken(token string) (*jwt.RegisteredClaims, error) {
 	}
 
 	return claims, nil
+}
+
+func ParseClaimsCtx(ctx context.Context) (*jwt.RegisteredClaims, bool) {
+	userClaim, ok := ctx.Value(AuthReqCtxKey).(*jwt.RegisteredClaims)
+	if !ok {
+		log.Println("error parsing claims")
+		return nil, false
+	}
+
+	return userClaim, true
 }
 
 // func RefreshTokens(tokens Tokens) error {

@@ -1,4 +1,4 @@
-package tokens
+package jwt
 
 import (
 	"crypto/ecdsa"
@@ -46,7 +46,7 @@ var (
 )
 
 // function to parse the private and public keys
-func SetJwtKeyPair(conf config.Jwt) {
+func SetDefaults(conf config.Jwt) {
 
 	once.Do(func() {
 		jwtPrivateKey, err := os.ReadFile(conf.JwtPvtKeyPath)

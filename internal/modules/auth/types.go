@@ -1,7 +1,7 @@
 package auth
 
 import (
-	"github.com/AxelTahmid/golang-starter/internal/utils/tokens"
+	"github.com/AxelTahmid/golang-starter/internal/utils/jwt"
 )
 
 type (
@@ -17,6 +17,6 @@ type (
 	}
 
 	LoginResponse struct {
-		tokens.Tokens
+		jwt.Tokens
 	}
 )

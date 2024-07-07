@@ -13,7 +13,7 @@ import (
 	"github.com/AxelTahmid/golang-starter/config"
 	"github.com/AxelTahmid/golang-starter/db"
 	"github.com/AxelTahmid/golang-starter/internal/server"
-	"github.com/AxelTahmid/golang-starter/internal/utils/tokens"
+	"github.com/AxelTahmid/golang-starter/internal/utils/jwt"
 )
 
 func main() {
@@ -55,7 +55,7 @@ func main() {
 		log.Fatalf("Error connecting to database: %v", err)
 	}
 
-	tokens.SetJwtKeyPair(conf.Jwt)
+	jwt.SetDefaults(conf.Jwt)
 
 	server := server.NewServer(conf, dbconn, tlsConfig, logger)
 	server.Start(ctx)
