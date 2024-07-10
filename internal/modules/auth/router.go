@@ -23,11 +23,11 @@ func Routes(pg *db.Postgres) chi.Router {
 
 	r.Post("/login", authHandler.login)
 	r.Post("/register", authHandler.register)
-	// r.Post("/refresh", authHandler.refresh)
-	
+
 	r.Group(func(r chi.Router) {
 		r.Use(middlewares.Authenticated)
 		r.Get("/me", authHandler.me)
+		r.Post("/refresh", authHandler.refresh)
 	})
 
 	return r

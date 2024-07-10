@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -44,7 +43,7 @@ func (handler AuthHandler) login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tokens, err := jwt.IssueToken(jwt.UserClaims{
+	tokens, err := jwt.IssueTokenPair(jwt.UserClaims{
 		Id:    fetchedUser.Id,
 		Email: fetchedUser.Email,
 		Role:  fetchedUser.Role,
@@ -55,7 +54,7 @@ func (handler AuthHandler) login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	reply.Status(http.StatusOK).WithJson(respond.Standard{
-		Message: fmt.Sprintf("%s %s", message.SuccessLogin, fetchedUser.Email),
+		Message: message.SuccessLogin,
 		Data:    LoginResponse{tokens},
 	})
 }
@@ -93,7 +92,7 @@ func (handler AuthHandler) register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	reply.Status(http.StatusCreated).WithJson(respond.Standard{
-		Message: fmt.Sprintf("%s %s", message.SuccessRegister, req.Email),
+		Message: message.SuccessRegister,
 	})
 }
 
@@ -103,7 +102,7 @@ func (handler AuthHandler) me(w http.ResponseWriter, r *http.Request) {
 
 	userClaim, ok := jwt.ParseClaimsCtx(ctx)
 	if !ok {
-		respond.Write(w).Status(http.StatusUnauthorized).WithErr(message.ErrUnauthorized)
+		reply.Status(http.StatusUnauthorized).WithErr(message.ErrUnauthorized)
 		return
 	}
 
@@ -116,5 +115,37 @@ func (handler AuthHandler) me(w http.ResponseWriter, r *http.Request) {
 	reply.Status(http.StatusOK).WithJson(respond.Standard{
 		Message: message.SuccessMe,
 		Data:    fetchedUser,
+	})
+}
+
+func (handler AuthHandler) refresh(w http.ResponseWriter, r *http.Request) {
+	reply := respond.Write(w)
+	ctx := r.Context()
+
+	userClaim, ok := jwt.ParseClaimsCtx(ctx)
+	if !ok {
+		reply.Status(http.StatusBadRequest).WithErr(message.ErrBadRequest)
+		return
+	}
+
+	fetchedUser, err := handler.user.getOne(ctx, userClaim.Subject)
+	if err != nil {
+		reply.Status(http.StatusUnauthorized).WithErr(message.ErrNoRecord)
+		return
+	}
+
+	token, err := jwt.ReIssueAccessToken(jwt.UserClaims{
+		Id:    fetchedUser.Id,
+		Email: fetchedUser.Email,
+		Role:  fetchedUser.Role,
+	})
+	if err != nil {
+		reply.Status(http.StatusInternalServerError).WithErr(err)
+		return
+	}
+
+	reply.Status(http.StatusOK).WithJson(respond.Standard{
+		Message: message.SucessRefresh,
+		Data:    RefreshResponse{token},
 	})
 }

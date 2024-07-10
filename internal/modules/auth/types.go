@@ -19,4 +19,8 @@ type (
 	LoginResponse struct {
 		jwt.Tokens
 	}
+
+	RefreshResponse struct {
+		AccessToken string `json:"access_token"`
+	}
 )

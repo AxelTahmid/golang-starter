@@ -29,7 +29,7 @@ func Authenticated(next http.Handler) http.Handler {
 		}
 
 		// parse the JWT string with claims and store the result in `claims`.
-		claims, err := jwt.ParseToken(authHeaderParts[1])
+		claims, err := jwt.ParseAccessTokenClaims(authHeaderParts[1])
 
 		if err != nil {
 			reply.Status(http.StatusBadRequest).WithErr(err)
