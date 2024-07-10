@@ -16,8 +16,8 @@ const (
 	accessTime  = 10 * time.Minute
 	refreshTime = 48 * time.Hour
 
-	accessTokenIssuer  = "login-handler"
-	refreshTokenIssuer = "refresh-handler"
+	accessTokenIssuer  = "auth-access"
+	refreshTokenIssuer = "auth-refresh"
 
 	AuthReqCtxKey jwtAuthKey = "authUser"
 )
@@ -44,6 +44,7 @@ var (
 
 	// errors
 	errTokenInvalid  = errors.New("token is invalid")
+	errTokenIssuer   = errors.New("invalid token issuer")
 	errParsingClaims = errors.New("error parsing claims")
 	errUserEmpty     = errors.New("user cannot be empty")
 	errTokenCreate   = errors.New("error creating token")

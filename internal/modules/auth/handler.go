@@ -134,7 +134,7 @@ func (handler AuthHandler) refresh(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := jwt.ReIssueAccessToken(jwt.UserClaims{
+	token, err := jwt.IssueAccessToken(jwt.UserClaims{
 		Id:    fetchedUser.Id,
 		Email: fetchedUser.Email,
 		Role:  fetchedUser.Role,

@@ -47,7 +47,7 @@ func IssueTokenPair(user UserClaims) (Tokens, error) {
 	return tokens, nil
 }
 
-func ReIssueAccessToken(user UserClaims) (string, error) {
+func IssueAccessToken(user UserClaims) (string, error) {
 	if user.Id == 0 && user.Email == "" && user.Role == "" {
 		return "", errUserEmpty
 	}
