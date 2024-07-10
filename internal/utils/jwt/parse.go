@@ -7,7 +7,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-func ParseToken(token string) (*jwt.RegisteredClaims, error) {
+func ParseAccessTokenClaims(token string) (*jwt.RegisteredClaims, error) {
 	parsedToken, err := jwt.ParseWithClaims(token, &jwt.RegisteredClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return publicKey, nil
 	})
@@ -29,6 +29,11 @@ func ParseToken(token string) (*jwt.RegisteredClaims, error) {
 		return nil, errParsingClaims
 	}
 
+	if claims.Issuer != accessTokenIssuer {
+		log.Println("invalid token issuer")
+		return nil, errTokenInvalid
+	}
+
 	return claims, nil
 }
 
@@ -42,27 +47,43 @@ func ParseClaimsCtx(ctx context.Context) (*jwt.RegisteredClaims, bool) {
 	return userClaim, true
 }
 
-// func RefreshTokens(tokens Tokens) error {
-// 	var err error
+func ParseTokenPair(tokens Tokens) bool {
+	accessToken, err := jwt.Parse(tokens.AccessToken, func(token *jwt.Token) (interface{}, error) {
+		return publicKey, nil
+	})
 
-// 	accessToken, accErr := ParseToken(tokens.AccessToken)
-// 	refreshClaims, refErr := ParseToken(tokens.RefreshToken)
+	if err != nil {
+		log.Printf("error parsing access token -> %v", err)
+		return false
+	}
 
-// 	// refresh token is expired
-// 	if refErr != nil {
-// 		refreshClaims, err = newToken(*refreshClaims)
-// 		if err != nil {
-// 			log.Fatal("error creating refresh token")
-// 		}
-// 	}
+	if !accessToken.Valid {
+		log.Println("access token expired, parsing refresh token")
+	}
 
-// 	// access token is expired
-// 	if accErr != nil && refErr == nil {
-// 		accessToken, err = newToken(*accessClaims)
-// 		if err != nil {
-// 			log.Fatal("error creating access token")
-// 		}
-// 	}
+	if accessToken.Claims.(jwt.RegisteredClaims).Issuer != accessTokenIssuer {
+		log.Println("invalid access token issuer")
+		return false
+	}
 
-// 	return nil
-// }
+	refreshToken, err := jwt.Parse(tokens.RefreshToken, func(token *jwt.Token) (interface{}, error) {
+		return publicKey, nil
+	})
+
+	if err != nil {
+		log.Printf("error parsing refresh token -> %v", err)
+		return false
+	}
+
+	if refreshToken.Claims.(jwt.RegisteredClaims).Issuer != refreshTokenIssuer {
+		log.Println("invalid refresh token issuer")
+		return false
+	}
+
+	if !refreshToken.Valid {
+		log.Println("refresh token expired, login required")
+		return false
+	}
+
+	return true
+}

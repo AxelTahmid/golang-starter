@@ -9,7 +9,7 @@ import (
 )
 
 // IssueToken creates a new access and refresh token, should never hold user state, only identifier
-func IssueToken(user UserClaims) (Tokens, error) {
+func IssueTokenPair(user UserClaims) (Tokens, error) {
 	if user.Id == 0 && user.Email == "" && user.Role == "" {
 		return Tokens{}, errUserEmpty
 	}
@@ -21,11 +21,11 @@ func IssueToken(user UserClaims) (Tokens, error) {
 
 	claims := jwt.RegisteredClaims{
 		ID:        strconv.Itoa(user.Id),
-		Issuer:    jwtIssuer,
+		Issuer:    accessTokenIssuer,
 		Subject:   user.Email,
 		Audience:  []string{user.Role},
 		IssuedAt:  jwt.NewNumericDate(time.Now()),
-		ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * 10)),
+		ExpiresAt: jwt.NewNumericDate(time.Now().Add(accessTime)),
 	}
 
 	tokens.AccessToken, err = newToken(claims)
@@ -35,7 +35,8 @@ func IssueToken(user UserClaims) (Tokens, error) {
 	}
 
 	// longer for refresh token
-	claims.ExpiresAt = jwt.NewNumericDate(time.Now().Add(time.Hour * 48))
+	claims.ExpiresAt = jwt.NewNumericDate(time.Now().Add(refreshTime))
+	claims.Issuer = refreshTokenIssuer
 
 	tokens.RefreshToken, err = newToken(claims)
 	if err != nil {
@@ -44,4 +45,32 @@ func IssueToken(user UserClaims) (Tokens, error) {
 	}
 
 	return tokens, nil
+}
+
+func ReIssueAccessToken(user UserClaims) (string, error) {
+	if user.Id == 0 && user.Email == "" && user.Role == "" {
+		return "", errUserEmpty
+	}
+
+	var (
+		accessToken string
+		err         error
+	)
+
+	claims := jwt.RegisteredClaims{
+		ID:        strconv.Itoa(user.Id),
+		Issuer:    accessTokenIssuer,
+		Subject:   user.Email,
+		Audience:  []string{user.Role},
+		IssuedAt:  jwt.NewNumericDate(time.Now()),
+		ExpiresAt: jwt.NewNumericDate(time.Now().Add(accessTime)),
+	}
+
+	accessToken, err = newToken(claims)
+	if err != nil {
+		log.Printf("error re-issuing access token -> %v", err)
+		return "", errTokenCreate
+	}
+
+	return accessToken, nil
 }

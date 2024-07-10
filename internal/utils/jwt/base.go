@@ -6,13 +6,20 @@ import (
 	"log"
 	"os"
 	"sync"
+	"time"
 
 	"github.com/AxelTahmid/golang-starter/config"
 	"github.com/golang-jwt/jwt/v5"
 )
 
 const (
-	jwtIssuer = "auth-service"
+	accessTime  = 10 * time.Minute
+	refreshTime = 48 * time.Hour
+
+	accessTokenIssuer  = "login-handler"
+	refreshTokenIssuer = "refresh-handler"
+
+	AuthReqCtxKey jwtAuthKey = "authUser"
 )
 
 type (
@@ -22,14 +29,11 @@ type (
 		Email string `json:"email"`
 		Role  string `json:"role"`
 	}
-
 	Tokens struct {
 		AccessToken  string `json:"access_token"`
 		RefreshToken string `json:"refresh_token"`
 	}
 )
-
-const AuthReqCtxKey jwtAuthKey = "authUser"
 
 var (
 	once sync.Once
