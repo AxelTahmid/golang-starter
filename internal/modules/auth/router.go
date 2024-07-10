@@ -24,15 +24,8 @@ func Routes(pg *db.Postgres) chi.Router {
 	r.Post("/login", authHandler.login)
 	r.Post("/register", authHandler.register)
 
-	r.Group(func(r chi.Router) {
-		r.Use(middlewares.Authenticated)
-		r.Get("/me", authHandler.me)
-	})
-
-	r.Group(func(r chi.Router) {
-		r.Use(middlewares.AuthenticatedRefreshToken)
-		r.Post("/refresh", authHandler.refresh)
-	})
+	r.With(middlewares.Authenticated).Get("/me", authHandler.me)
+	r.With(middlewares.AuthenticatedRefreshToken).Post("/refresh", authHandler.refresh)
 
 	return r
 }
