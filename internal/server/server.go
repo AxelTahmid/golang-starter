@@ -53,25 +53,26 @@ func (s *Server) Start(ctx context.Context) {
 	}
 
 	shutdownComplete := handleShutdown(func() {
-
-		log.Println("Starting server shutdown ...")
+		log.Println("Starting server shutdown...")
 
 		s.db.Close()
+		log.Println("Closed database pool...")
 
-		if err := server.Shutdown(ctx); err != nil {
+		err := server.Shutdown(ctx)
+		if err != nil {
 			log.Printf("server.Shutdown failed: %v\n", err)
 		}
+		log.Println("Server shutdown gracefully")
 	})
 
-	log.Printf("Server started on port %d\n", s.conf.Server.Port)
+	log.Printf("Starting server on port %d\n", s.conf.Server.Port)
+	err := server.ListenAndServeTLS("", "")
 
-	if err := server.ListenAndServeTLS("", ""); err == http.ErrServerClosed {
+	if err == http.ErrServerClosed {
 		<-shutdownComplete
 	} else {
 		log.Printf("http.ListenAndServe failed: %v\n", err)
 	}
-
-	log.Println("Server shutdown gracefully")
 }
 
 func handleShutdown(onShutdownSignal func()) <-chan struct{} {
