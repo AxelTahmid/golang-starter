@@ -23,7 +23,7 @@ services:
         restart: always
 
     database:
-        image: 'postgres:17beta1-bookworm'
+        image: 'postgres:17beta2-bookworm'
         container_name: db
         env_file: '.env'
         environment:
