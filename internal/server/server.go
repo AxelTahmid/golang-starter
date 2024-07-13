@@ -59,12 +59,12 @@ func (s *Server) Start(ctx context.Context) {
 	logger := slog.NewLogLogger(slog.NewJSONHandler(os.Stdout, nil), loggerLevel)
 
 	server := http.Server{
-		Addr:         fmt.Sprintf(":%d", s.conf.Server.Port),
+		Addr:         fmt.Sprintf(":%d", s.conf.Port),
 		Handler:      s.router,
 		TLSConfig:    s.tls,
-		IdleTimeout:  s.conf.Server.IdleTimeout,
-		ReadTimeout:  s.conf.Server.ReadTimeout,
-		WriteTimeout: s.conf.Server.WriteTimeout,
+		IdleTimeout:  s.conf.IdleTimeout,
+		ReadTimeout:  s.conf.ReadTimeout,
+		WriteTimeout: s.conf.WriteTimeout,
 		ErrorLog:     logger,
 	}
 
