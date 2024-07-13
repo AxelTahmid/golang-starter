@@ -19,9 +19,10 @@ type Postgres struct {
 }
 
 var (
-	pool     *Postgres
-	dbLogger *slog.Logger
-	pgOnce   sync.Once
+	pool       *Postgres
+	pgOnce     sync.Once
+	dbLogger   *slog.Logger
+	dbTimeZone string
 )
 
 func getParsedConfig(conf config.Database) *pgxpool.Config {
@@ -54,6 +55,7 @@ func CreatePool(ctx context.Context, conf config.Database, logger *slog.Logger) 
 
 	pgOnce.Do(func() {
 		dbLogger = logger
+		dbTimeZone = conf.TimeZone
 
 		dbPool, dbErr := pgxpool.NewWithConfig(ctx, getParsedConfig(conf))
 		if dbErr != nil {
@@ -75,11 +77,12 @@ func (pg *Postgres) Close() {
 }
 
 func setDbTimeZone(ctx context.Context, conn *pgx.Conn) error {
-	_, err := conn.Exec(ctx, "SET TIME ZONE 'UTC';")
+	// SET does not support parameterized queries
+	query := fmt.Sprintf("SET TIME ZONE '%s'", dbTimeZone)
 
-	if err != nil {
+	if _, err := conn.Exec(ctx, query); err != nil {
 		return fmt.Errorf("unable to set timezone: %w", err)
 	}
-	log.Printf("Timezone set to UTC\n")
+	log.Printf("Timezone set to %s", dbTimeZone)
 	return nil
 }
