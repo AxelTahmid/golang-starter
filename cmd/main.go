@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"crypto/tls"
 	"log"
 	"log/slog"
 	"os"
@@ -36,15 +35,6 @@ func main() {
 
 	slog.SetDefault(logger)
 
-	serverTLSCert, err := tls.LoadX509KeyPair(conf.Server.TLSCertPath, conf.Server.TLSKeyPath)
-	if err != nil {
-		log.Fatalf("Error loading certificate and key file: %v", err)
-	}
-
-	tlsConfig := &tls.Config{
-		Certificates: []tls.Certificate{serverTLSCert},
-	}
-
 	dbconn, err := db.CreatePool(ctx, conf.Database, logger)
 	if err != nil {
 		log.Fatalf("Db Connection Failed: %v", err)
@@ -57,6 +47,6 @@ func main() {
 
 	jwt.SetDefaults(conf.Jwt)
 
-	server := server.NewServer(conf, dbconn, tlsConfig, logger)
+	server := server.NewServer(conf, dbconn, logger)
 	server.Start(ctx)
 }

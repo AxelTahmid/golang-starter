@@ -25,12 +25,22 @@ type Server struct {
 	log    *slog.Logger
 }
 
-func NewServer(c *config.Config, db *db.Postgres, t *tls.Config, l *slog.Logger) *Server {
+func NewServer(c *config.Config, db *db.Postgres, l *slog.Logger) *Server {
+
+	serverTLSCert, err := tls.LoadX509KeyPair(c.TLSCertPath, c.TLSKeyPath)
+	if err != nil {
+		log.Fatalf("Error loading certificate and key file: %v", err)
+	}
+
+	tlsConfig := &tls.Config{
+		Certificates: []tls.Certificate{serverTLSCert},
+	}
+
 	server := &Server{
 		conf:   c,
 		router: chi.NewRouter(),
 		db:     db,
-		tls:    t,
+		tls:    tlsConfig,
 		log:    l,
 	}
 
