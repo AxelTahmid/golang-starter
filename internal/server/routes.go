@@ -4,8 +4,8 @@ import (
 	"github.com/go-chi/chi/v5"
 	chiMiddleware "github.com/go-chi/chi/v5/middleware"
 
+	"github.com/AxelTahmid/golang-starter/internal/app/auth"
 	"github.com/AxelTahmid/golang-starter/internal/middlewares"
-	"github.com/AxelTahmid/golang-starter/internal/modules/auth"
 )
 
 func (s *Server) routes() {
