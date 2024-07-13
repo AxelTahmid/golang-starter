@@ -5,7 +5,7 @@ import (
 	"github.com/unrolled/secure"
 )
 
-func Helmet(conf config.Secure) *secure.Secure {
+func Secure(conf config.Secure) *secure.Secure {
 	secureMiddleware := secure.New(secure.Options{
 		STSSeconds:            conf.STSSeconds,
 		STSIncludeSubdomains:  conf.STSIncludeSubdomains,

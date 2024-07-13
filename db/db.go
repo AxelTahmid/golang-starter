@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"log/slog"
 	"sync"
 
 	"github.com/jackc/pgx/v5"
@@ -18,11 +19,12 @@ type Postgres struct {
 }
 
 var (
-	pool   *Postgres
-	pgOnce sync.Once
+	pool     *Postgres
+	dbLogger *slog.Logger
+	pgOnce   sync.Once
 )
 
-func setDefaults(conf config.Database) *pgxpool.Config {
+func getParsedConfig(conf config.Database) *pgxpool.Config {
 
 	dbConfig, err := pgxpool.ParseConfig(conf.Url)
 
@@ -40,18 +42,20 @@ func setDefaults(conf config.Database) *pgxpool.Config {
 	dbConfig.AfterConnect = setDbTimeZone
 
 	dbConfig.ConnConfig.Tracer = &tracelog.TraceLog{
-		Logger:   InitLogger(),
+		Logger:   InitLogger(dbLogger),
 		LogLevel: tracelog.LogLevelTrace,
 	}
 
 	return dbConfig
 }
 
-func CreatePool(ctx context.Context, conf config.Database) (*Postgres, error) {
+func CreatePool(ctx context.Context, conf config.Database, logger *slog.Logger) (*Postgres, error) {
 	var err error
 
 	pgOnce.Do(func() {
-		dbPool, dbErr := pgxpool.NewWithConfig(ctx, setDefaults(conf))
+		dbLogger = logger
+
+		dbPool, dbErr := pgxpool.NewWithConfig(ctx, getParsedConfig(conf))
 		if dbErr != nil {
 			err = dbErr
 		}

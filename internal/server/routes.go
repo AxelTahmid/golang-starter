@@ -14,7 +14,7 @@ func (s *Server) routes() {
 	s.router.Use(chiMiddleware.RequestID)
 	s.router.Use(middlewares.Logger(s.log))
 	s.router.Use(middlewares.Recovery)
-	s.router.Use(middlewares.Helmet(s.conf.Secure).Handler)
+	s.router.Use(middlewares.Secure(s.conf.Secure).Handler)
 	s.router.Use(middlewares.Json)
 	s.router.Use(chiMiddleware.Heartbeat("/ping"))
 

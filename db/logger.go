@@ -3,31 +3,15 @@ package db
 import (
 	"context"
 	"log/slog"
-	"os"
-	"time"
 
 	"github.com/jackc/pgx/v5/tracelog"
-	"github.com/lmittmann/tint"
 )
 
 type Logger struct {
 	l *slog.Logger
 }
 
-func InitLogger() *Logger {
-	var logger *slog.Logger
-
-	if os.Getenv("APP_ENV") != "production" {
-		logger = slog.New(
-			tint.NewHandler(os.Stdout, &tint.Options{
-				Level:      slog.LevelDebug,
-				TimeFormat: time.Kitchen,
-			}),
-		).With("module", "pgx")
-	} else {
-		logger = slog.New(slog.NewJSONHandler(os.Stdout, nil)).With("module", "pgx")
-	}
-
+func InitLogger(logger *slog.Logger) *Logger {
 	return &Logger{l: logger}
 }
 
