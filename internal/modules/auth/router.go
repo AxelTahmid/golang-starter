@@ -17,7 +17,7 @@ func Routes(pg *db.Postgres) chi.Router {
 	r := chi.NewRouter()
 
 	authHandler := &AuthHandler{
-		user: UserModel{pool: pg.DB},
+		user: UserModel{pool: pg.Conn()},
 		v:    validator.New(),
 	}
 
