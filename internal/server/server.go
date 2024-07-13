@@ -40,7 +40,13 @@ func NewServer(c *config.Config, db *db.Postgres, t *tls.Config, l *slog.Logger)
 }
 
 func (s *Server) Start(ctx context.Context) {
-	logger := slog.NewLogLogger(slog.NewJSONHandler(os.Stdout, nil), slog.LevelError)
+	loggerLevel := slog.LevelDebug
+
+	if s.conf.AppEnv == "production" {
+		loggerLevel = slog.LevelWarn
+	}
+
+	logger := slog.NewLogLogger(slog.NewJSONHandler(os.Stdout, nil), loggerLevel)
 
 	server := http.Server{
 		Addr:         fmt.Sprintf(":%d", s.conf.Server.Port),
