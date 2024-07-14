@@ -26,7 +26,7 @@ COPY . .
 RUN go mod download
 RUN go mod verify
 
-RUN CGO_ENABLED=0 go build -o /app/bin/main /app/cmd/main.go
+RUN CGO_ENABLED=0 go build -o /app/bin/main /app/cmd/golang-starter/main.go
 
 ## Production Runner
 FROM gcr.io/distroless/static-debian12 as prod
