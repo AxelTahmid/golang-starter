@@ -12,7 +12,7 @@ import (
 	"github.com/AxelTahmid/golang-starter/config"
 	"github.com/AxelTahmid/golang-starter/db"
 	"github.com/AxelTahmid/golang-starter/internal/server"
-	"github.com/AxelTahmid/golang-starter/internal/utils/jwt"
+	"github.com/AxelTahmid/golang-starter/pkg/jwt"
 )
 
 func main() {

@@ -1,7 +1,7 @@
 package auth
 
 import (
-	"github.com/AxelTahmid/golang-starter/internal/utils/jwt"
+	"github.com/AxelTahmid/golang-starter/pkg/jwt"
 )
 
 type (

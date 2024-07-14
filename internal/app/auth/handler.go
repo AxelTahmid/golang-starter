@@ -4,12 +4,12 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/AxelTahmid/golang-starter/internal/utils/bcrypt"
-	"github.com/AxelTahmid/golang-starter/internal/utils/jwt"
-	"github.com/AxelTahmid/golang-starter/internal/utils/message"
-	"github.com/AxelTahmid/golang-starter/internal/utils/request"
-	"github.com/AxelTahmid/golang-starter/internal/utils/respond"
-	"github.com/AxelTahmid/golang-starter/internal/utils/validate"
+	"github.com/AxelTahmid/golang-starter/pkg/bcrypt"
+	"github.com/AxelTahmid/golang-starter/pkg/jwt"
+	"github.com/AxelTahmid/golang-starter/pkg/message"
+	"github.com/AxelTahmid/golang-starter/pkg/request"
+	"github.com/AxelTahmid/golang-starter/pkg/respond"
+	"github.com/AxelTahmid/golang-starter/pkg/validate"
 )
 
 func (handler AuthHandler) login(w http.ResponseWriter, r *http.Request) {
