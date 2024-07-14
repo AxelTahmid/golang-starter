@@ -62,8 +62,7 @@ migrate-down:
 # make migrate-force v=xxx
 migrate-force:
 	docker compose --profile tools run --rm migrate force ${v}
-
-# make migrate-create f=xxx
+	
 migrate-create:
 	docker compose --profile tools run --rm migrate create -ext sql -dir /migrations $(f)
 

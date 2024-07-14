@@ -21,19 +21,19 @@ The project follows below folder structure:
 project-root/
     ├── cmd/
     │   ├── app-name/
-    │   │   ├── main.go         # Application entry point
-    │   │   └── ...             # Other application-specific files
+    │   │   ├── main.go          # Application entry point
+    │   │   └── ...              # Other application-specific files
     ├── cert/
-    │   ├── ...                 # Certificates & Keys
+    │   ├── ...                  # Certificates & Keys
     ├── config/
-    │   ├── config.go           # Configuration logic
+    │   ├── config.go            # Configuration logic
     │   └── ...
     ├── db/
     │   ├── migrations/
-    │   │   ├── *.sql           # Migrations files
+    │   │   ├── *.sql            # Migrations files
     │   │   ├── ...
-    │   ├── db.go               # Database setup and access
-    │   ├── logger.go           # Database logger adapter
+    │   ├── db.go                # Database setup and access
+    │   ├── logger.go            # Database logger adapter
     │   └── ...
     ├── api/                     # API-related code (e.g., REST)
     │   ├── middleware/
@@ -60,6 +60,15 @@ project-root/
 ```
 
 ## Get Started
+
+Ensure `Docker` & `Docker-Compose` is installed locally with compose v2 being available.
+
+```sh
+# v1 syntax
+docker-compose ...
+# v2 syntax
+docker compose ...
+```
 
 Copy `.env.example` to `.env` to get started & provide appropiate values
 
