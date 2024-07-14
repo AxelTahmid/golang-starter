@@ -4,8 +4,8 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-playground/validator/v10"
 
+	"github.com/AxelTahmid/golang-starter/api/middlewares"
 	"github.com/AxelTahmid/golang-starter/db"
-	"github.com/AxelTahmid/golang-starter/internal/middlewares"
 )
 
 type AuthHandler struct {

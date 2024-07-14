@@ -9,9 +9,9 @@ import (
 
 	"github.com/lmittmann/tint"
 
+	"github.com/AxelTahmid/golang-starter/api"
 	"github.com/AxelTahmid/golang-starter/config"
 	"github.com/AxelTahmid/golang-starter/db"
-	"github.com/AxelTahmid/golang-starter/internal/server"
 	"github.com/AxelTahmid/golang-starter/pkg/jwt"
 )
 
@@ -53,6 +53,6 @@ func main() {
 	jwt.SetDefaults(conf.Jwt)
 
 	// Start server
-	server := server.NewServer(conf, dbconn, logger)
+	server := api.NewServer(conf, dbconn, logger)
 	server.Start(ctx)
 }
