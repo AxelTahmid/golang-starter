@@ -1,9 +1,0 @@
-BEGIN;
-
-DROP TRIGGER IF EXISTS set_user_updated_at ON users;
-
-DROP TYPE IF EXISTS role_type CASCADE;
-
-DROP TABLE IF EXISTS users;
-
-COMMIT;

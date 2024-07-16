@@ -33,3 +33,10 @@ FROM gcr.io/distroless/static-debian12 as prod
 
 COPY --from=build /go/bin/main /
 CMD ["/main"]
+
+## Goose  Migrations
+FROM base as goose
+RUN go install github.com/pressly/goose/v3/cmd/goose@latest
+WORKDIR /app
+
+

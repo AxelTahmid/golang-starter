@@ -54,27 +54,29 @@ services:
         networks:
             - appnetwork
 
-    migrate:
-        image: migrate/migrate:latest
+    # postgres migration tool
+    goose:
+        container_name: goose-runner
         profiles: ['tools']
+        env_file: .env
+        build:
+            context: .
+            target: goose
+            dockerfile: Dockerfile
+        environment:
+            GOOSE_DRIVER: postgres
+            GOOSE_DBSTRING: postgres://${DB_USER}:${DB_ROOT_PASSWORD}@db:5432/${DB_NAME}?sslmode=disable
+            GOOSE_MIGRATION_DIR: /migrations
         volumes:
             - ./db/migrations:/migrations
-        entrypoint:
-            [
-                'migrate',
-                '-path',
-                '/migrations',
-                '-database',
-                'postgres://${DB_USER}:${DB_ROOT_PASSWORD}@db:5432/${DB_NAME}?sslmode=disable',
-                '-verbose',
-            ]
-        # command: ["up"]
+        # https://github.com/pressly/goose?tab=readme-ov-file#usage
+        entrypoint: ['goose', '-s', '-timeout', '5m']
         networks:
             - appnetwork
         depends_on:
             database:
                 condition: service_healthy
-        restart: on-failure
+        restart: never
 
 volumes:
     db_data:

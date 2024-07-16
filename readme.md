@@ -103,17 +103,17 @@ make dev
 run migration of postgresql database, ensure `.env` values are correctly given
 
 ```sh
-make migrate-up
+make db-up
 ```
 
 revert migration of above
 
 ```sh
-make migrate-down
+make db-down
 ```
 
 create migration files
 
 ```sh
-make migrate-create filename=xxx
+make db-create f=xxx
 ```

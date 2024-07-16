@@ -52,19 +52,28 @@ log:
 log-db:
 	docker logs -f db
 
-migrate-up:
-	docker compose --profile tools run --rm migrate up
-
-migrate-down:
-	docker compose --profile tools run --rm migrate down 1
-
-# https://github.com/golang-migrate/migrate/issues/282#issuecomment-530743258
-# make migrate-force v=xxx
-migrate-force:
-	docker compose --profile tools run --rm migrate force ${v}
-	
-migrate-create:
-	docker compose --profile tools run --rm migrate create -ext sql -dir /migrations $(f)
+# Database migration scripts
+db:
+	docker compose --profile tools run --rm goose status
+# Migrate the DB to the most recent version available
+db-up:
+	docker compose --profile tools run --rm goose up
+# Roll back the version by 1
+db-down:
+	docker compose --profile tools run --rm goose down
+# Re-run the latest migration
+db-redo:
+	docker compose --profile tools run --rm goose redo
+# Roll back all migrations
+db-reset:
+	docker compose --profile tools run --rm goose reset
+# Check migration files without running them
+db-validate:
+	docker compose --profile tools run --rm goose validate
+# Creates new migration file with the current sequence 
+# example: make migrate-create f=xxx
+db-create:
+	docker compose --profile tools run --rm goose create $(f) sql
 
 lint:
 	docker run -t --rm -v $(PWD):/app -w /app golangci/golangci-lint:v1.59-alpine golangci-lint run -v

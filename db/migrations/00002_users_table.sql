@@ -1,3 +1,5 @@
+-- +goose Up
+-- +goose StatementBegin
 BEGIN;
 
 CREATE TYPE role_type AS ENUM ('user', 'admin');
@@ -18,3 +20,18 @@ CREATE TRIGGER set_user_updated_at BEFORE
 UPDATE ON users FOR EACH ROW EXECUTE PROCEDURE set_updated_at ();
 
 COMMIT;
+
+-- +goose StatementEnd
+-- +goose Down
+-- +goose StatementBegin
+BEGIN;
+
+DROP TRIGGER IF EXISTS set_user_updated_at ON users;
+
+DROP TYPE IF EXISTS role_type CASCADE;
+
+DROP TABLE IF EXISTS users;
+
+COMMIT;
+
+-- +goose StatementEnd
