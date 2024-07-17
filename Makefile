@@ -1,8 +1,8 @@
-# Load all values from .env and export them
-ifneq (,$(wildcard ./.env))
-    include .env
-    export
-endif
+# # Load all values from .env and export them, within makefile commands
+# ifneq (,$(wildcard ./.env))
+#     include .env
+#     export
+# endif
 
 # self-seigned tls for local dev only
 tls:
