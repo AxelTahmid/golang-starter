@@ -18,7 +18,7 @@ type Database struct {
 	TimeZone          string        `split_words:"true" default:"UTC"`
 }
 
-func dBConfig() Database {
+func dbConfig() Database {
 	var d Database
 	envconfig.MustProcess("DB", &d)
 

@@ -30,8 +30,9 @@ RUN CGO_ENABLED=0 go build -o /app/bin/main /app/cmd/golang-starter/main.go
 
 ## Production Runner
 FROM gcr.io/distroless/static-debian12 as prod
-
+WORKDIR /app
 COPY --from=build /go/bin/main /
+RUN mkdir /app/cert
 CMD ["/main"]
 
 ## Goose  Migrations

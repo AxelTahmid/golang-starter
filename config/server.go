@@ -15,8 +15,8 @@ type Server struct {
 	IdleTimeout  time.Duration `split_words:"true" default:"60s"`
 	ReadTimeout  time.Duration `split_words:"true" default:"5s"`
 	WriteTimeout time.Duration `split_words:"true" default:"10s"`
-	TLSCertPath  string        `split_words:"true" default:"./cert/tls.crt"`
-	TLSKeyPath   string        `split_words:"true" default:"./cert/tls.key"`
+	TLSCertPath  string        `split_words:"true" required:"true"`
+	TLSKeyPath   string        `split_words:"true" required:"true"`
 }
 
 func serverConfig() Server {

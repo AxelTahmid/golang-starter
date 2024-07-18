@@ -22,7 +22,7 @@ func New() *Config {
 			Server:   serverConfig(),
 			Cors:     corsConfig(),
 			Secure:   secureConfig(),
-			Database: dBConfig(),
+			Database: dbConfig(),
 			Jwt:      jwtConfig(),
 		}
 	},
