@@ -12,7 +12,7 @@ import (
 
 func Authenticated(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		reply := respond.Write(w)
+		reply := respond.Write(&w)
 
 		// we expect the "Authorization" header to be present in the request
 		authHeader := r.Header.Get("Authorization")
@@ -45,7 +45,7 @@ func Authenticated(next http.Handler) http.Handler {
 
 func AuthenticateAdminOnly(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		reply := respond.Write(w)
+		reply := respond.Write(&w)
 
 		// get the claims from the request context
 		claims, ok := jwt.ParseClaimsCtx(r.Context())
@@ -67,7 +67,7 @@ func AuthenticateAdminOnly(next http.Handler) http.Handler {
 
 func AuthenticatedRefreshToken(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		reply := respond.Write(w)
+		reply := respond.Write(&w)
 
 		// we expect the "Authorization" header to be present in the request
 		authHeader := r.Header.Get("Authorization")

@@ -13,7 +13,7 @@ import (
 )
 
 func (handler AuthHandler) login(w http.ResponseWriter, r *http.Request) {
-	reply := respond.Write(w)
+	reply := respond.Write(&w)
 
 	var req LoginRequest
 
@@ -60,7 +60,7 @@ func (handler AuthHandler) login(w http.ResponseWriter, r *http.Request) {
 }
 
 func (handler AuthHandler) register(w http.ResponseWriter, r *http.Request) {
-	reply := respond.Write(w)
+	reply := respond.Write(&w)
 
 	var req RegisterRequest
 
@@ -97,7 +97,7 @@ func (handler AuthHandler) register(w http.ResponseWriter, r *http.Request) {
 }
 
 func (handler AuthHandler) me(w http.ResponseWriter, r *http.Request) {
-	reply := respond.Write(w)
+	reply := respond.Write(&w)
 	ctx := r.Context()
 
 	userClaim, ok := jwt.ParseClaimsCtx(ctx)
@@ -119,7 +119,7 @@ func (handler AuthHandler) me(w http.ResponseWriter, r *http.Request) {
 }
 
 func (handler AuthHandler) refresh(w http.ResponseWriter, r *http.Request) {
-	reply := respond.Write(w)
+	reply := respond.Write(&w)
 	ctx := r.Context()
 
 	userClaim, ok := jwt.ParseClaimsCtx(ctx)

@@ -11,8 +11,8 @@ type Writer struct {
 	w http.ResponseWriter
 }
 
-func Write(w http.ResponseWriter) *Writer {
-	return &Writer{w: w}
+func Write(w *http.ResponseWriter) *Writer {
+	return &Writer{w: *w}
 }
 
 func (rw *Writer) Status(status int) *Writer {

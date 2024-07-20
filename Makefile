@@ -24,13 +24,13 @@ deps-upgrade:
 deps-cleancache:
 	go clean -modcache
 
-run: 
-	go mod download
-	go run ./cmd/main.go
-
 tidy:
 	go mod tidy
 	go mod download
+
+run: 
+	tidy
+	go run ./cmd/golang-starter/main.go
 
 build:
 	docker compose up -d --build --no-cache

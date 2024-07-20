@@ -1,4 +1,4 @@
-FROM golang:1.22-alpine as base
+FROM golang:1.22-bookworm as base
 
 ## Dev Runner
 FROM base as dev
