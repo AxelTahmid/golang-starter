@@ -12,28 +12,32 @@ deps-upgrade:
 deps-cleancache: 
 	go clean -modcache
 
-tidy: 
+tidy:
 	go mod tidy
+
 run: 
 	go run ./cmd/golang-starter/main.go
 
-build-dev: docker compose up -d --build --no-cache
+build-dev: 
+	docker compose up -d --build --no-cache
 
 build-release: 
 	CGO_ENABLED=0 GOOS=$(os) GOARCH=$(arch) go build -o ./bin/main ./cmd/golang-starter/main.go
 
-up: 
+up:
 	docker compose up -d
-down: 
+
+down:
 	docker compose down
-dev: 
-	tidy down up log
+
+dev: tidy down up log
 
 exec-db: 
 	docker exec -it db sh
 
-log: 
+log:
 	docker logs -f api
+
 log-db: 
 	docker logs -f db
 
@@ -56,8 +60,6 @@ db-reset:
 db-validate: 
 	docker compose --profile tools run --rm goose validate
 # Creates new migration file with the current sequence 
-# example: 
-	make migrate-create f=xxx
 db-create: 
 	docker compose --profile tools run --rm goose create $(f) sql
 
