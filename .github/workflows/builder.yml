@@ -1,10 +1,10 @@
-name: 'Build & Push Image - Github'
-run-name: 'Build & Push Image - arektacoinstore/web:backend-${{ github.event.inputs.tag }}'
+name: 'Release Image'
+run-name: 'Release Image - <repo>-${{ github.event.inputs.tag }} - linux/amd64 & linux/arm64'
 
 on:
     workflow_dispatch:
         inputs:
-            repostiroy:
+            repo:
                 type: string
                 description: 'Repository Name/Path'
                 required: true
@@ -18,6 +18,26 @@ on:
                     - alpha
                     - beta
                     - prod
+            os:
+                type: choice
+                description: 'Target Operating System'
+                default: linux
+                required: true
+                options:
+                    - linux
+                    - freebsd
+                    - darwin
+                    - solaris
+                    - openbsd
+            arch:
+                type: choice
+                description: 'Target Architechture'
+                default: amd64
+                required: true
+                options:
+                    - amd64
+                    - arm64
+                    - arm
 
 jobs:
     build:
@@ -25,6 +45,21 @@ jobs:
         steps:
             - name: Checkout
               uses: actions/checkout@v4
+
+            # dependencies cached by default on root go.sum
+            - name: Setup Go
+              uses: actions/setup-go@v5
+              with:
+                  go-version-file: './go.mod'
+
+            - name: Print Version
+              run: go version
+
+            - name: Download & Verify Dependencies
+              run: make deps
+
+            - name: Build Release Binary
+              run: os=${{github.event.inputs.os}} arch=${{ github.event.inputs.arch }} make build-release
 
             - name: Set up QEMU
               uses: docker/setup-qemu-action@v3
@@ -42,8 +77,8 @@ jobs:
               uses: docker/build-push-action@v6
               with:
                   context: .
-                  target: prod
-                  platforms: linux/amd64,linux/arm64
+                  target: release
+                  platforms: ${{github.event.inputs.os}}/${{ github.event.inputs.arch }}
                   push: true
-                  tags: ${{github.event.inputs.repository}}-${{ github.event.inputs.tag }}
-                  # make repository name static in your app.
+                  tags: ${{github.event.inputs.repo}}-${{ github.event.inputs.tag }}
+                  # make repository name static in your copy.

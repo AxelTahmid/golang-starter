@@ -1,39 +1,21 @@
 FROM golang:1.22-bookworm as base
+FROM gcr.io/distroless/static-debian12 as prod
 
-## Dev Runner
+## Dev Runner, local files are volume mounted
 FROM base as dev
-
 WORKDIR /app
-
 RUN go install github.com/air-verse/air@latest
-
 COPY go.mod go.sum ./
 RUN go mod download
-
-EXPOSE 3000
-
 CMD ["air", "-c", ".air.toml"]
 
-## Production Builder
-FROM base as build
-
-RUN apk update && apk add --no-cache git
-
+## Production Runner, build using makefile command at readme
+FROM prod as release
 WORKDIR /app
-
-COPY . .
-
-RUN go mod download
-RUN go mod verify
-
-RUN CGO_ENABLED=0 go build -o /app/bin/main /app/cmd/golang-starter/main.go
-
-## Production Runner
-FROM gcr.io/distroless/static-debian12 as prod
-WORKDIR /app
-COPY --from=build /go/bin/main /
 RUN mkdir /app/cert
+COPY ./bin/main /
 CMD ["/main"]
+# ex: docker build -t gostarter:latest --target prod .
 
 ## Goose  Migrations
 FROM base as goose
