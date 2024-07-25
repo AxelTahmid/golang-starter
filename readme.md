@@ -92,9 +92,10 @@ install & clean golang dependencies
 
 ```sh
 make tidy
+make deps
 ```
 
-run the development server with hot realod
+run the development server with hot reload
 
 ```sh
 make dev
@@ -106,7 +107,7 @@ run migration of postgresql database, ensure `.env` values are correctly given
 make db-up
 ```
 
-revert migration of above
+revert migrations by 1 level
 
 ```sh
 make db-down
@@ -115,5 +116,13 @@ make db-down
 create migration files
 
 ```sh
-make db-create f=xxx
+make db-create f=<filename>
+```
+
+## Building Binaries
+
+use below command to build binaries targetted towards supported `os` & `architechture`
+
+```sh
+os=<OPERATING SYSTEM> arch=<ARCHITECHTURE> make build-release
 ```
