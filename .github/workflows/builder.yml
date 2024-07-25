@@ -4,10 +4,6 @@ run-name: 'Release Image - <repo>-${{ github.event.inputs.tag }} - linux/amd64 &
 on:
     workflow_dispatch:
         inputs:
-            repo:
-                type: string
-                description: 'Repository Name/Path'
-                required: true
             tag:
                 type: choice
                 description: 'Repository Image Tag'
@@ -15,7 +11,6 @@ on:
                 required: true
                 options:
                     - dev
-                    - alpha
                     - beta
                     - prod
             os:
@@ -42,6 +37,10 @@ on:
 jobs:
     build:
         runs-on: ubuntu-latest
+        env:
+            DOCKERHUB_REPOSITORY: '<repo name>'
+            PLATFORM_OS: ${{github.event.inputs.os}}
+            PLATFORM_ARCHITECHTURE: ${{github.event.inputs.arch}}
         steps:
             - name: Checkout
               uses: actions/checkout@v4
@@ -59,7 +58,7 @@ jobs:
               run: make deps
 
             - name: Build Release Binary
-              run: os=${{github.event.inputs.os}} arch=${{ github.event.inputs.arch }} make build-release
+              run: os=${{env.PLATFORM_OS}} arch=${{env.PLATFORM_ARCHITECHTURE}} make build-release
 
             - name: Set up QEMU
               uses: docker/setup-qemu-action@v3
@@ -78,7 +77,6 @@ jobs:
               with:
                   context: .
                   target: release
-                  platforms: ${{github.event.inputs.os}}/${{ github.event.inputs.arch }}
+                  platforms: ${{env.PLATFORM_OS}}/${{env.PLATFORM_ARCHITECHTURE}}
                   push: true
-                  tags: ${{github.event.inputs.repo}}-${{ github.event.inputs.tag }}
-                  # make repository name static in your copy.
+                  tags: ${{env.DOCKERHUB_REPOSITORY}}-${{github.event.inputs.tag}}
