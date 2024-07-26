@@ -1,17 +1,17 @@
-## Golang Http Starter - ⚠️ WIP ⚠️
+## Golang Api Starter
 
 This is a monolithic http api starter with sane defaults. Features include:
 
--   `slog` for global logging
--   `envconfig` for app configuration parsing & validation
--   `air` for hot-reloading dev server
--   `chi/v5` for routing & middleware
--   `pgx/v5` for database connectivity with pooling
--   `migrate/migrate` for migrations without adding to app dependency
--   `bcrypt` fir password hashing
--   `golang-jwt/jwt/v5` for JWT Authentication
--   JSON request validation with `validator/v10` & response serialization
--   `Makefile` scripts for common usages
+-   `air` - hot-reloading dev server
+-   `slog` - global logging
+-   `chi/v5` - routing & middleware
+-   `pgx/v5` - database connectivity with pooling
+-   `goose` - database migrations without adding to app dependency
+-   `bcrypt` - password hashing
+-   `golang-jwt/jwt/v5` - jwt Authentication
+-   `validator/v10` - incoming request payload validation
+-   `envconfig` - app configuration parsing & validation
+-   `Makefile` commands for tooling
 
 ## Folder Structure
 
@@ -20,7 +20,7 @@ The project follows below folder structure:
 ```go
 project-root/
     ├── cmd/
-    │   ├── app-name/
+    │   ├── <app-name>/
     │   │   ├── main.go          # Application entry point
     │   │   └── ...              # Other application-specific files
     ├── cert/
@@ -30,7 +30,7 @@ project-root/
     │   └── ...
     ├── db/
     │   ├── migrations/
-    │   │   ├── *.sql            # Migrations files
+    │   │   ├── *.sql            # Migrations files for goose
     │   │   ├── ...
     │   ├── db.go                # Database setup and access
     │   ├── logger.go            # Database logger adapter
@@ -42,12 +42,12 @@ project-root/
     │   ├── routes.go            # All Application routes
     │   └── ...
     ├── pkg/                     # Public, reusable packages
-    │   ├── mypackage/
+    │   ├── <name>/
     │   │   ├── mypackage.go     # Public package code
     │   │   └── ...
     │   └── ...
     ├── domain/                  # Encapsulted Applicaton Logic
-    │   ├── mypackage/
+    │   ├── <nam>/
     │   │   ├── mypackage.go
     │   │   └── ...
     │   └── ...
@@ -61,28 +61,21 @@ project-root/
 
 ## Get Started
 
-Ensure `Docker` & `Docker-Compose` is installed locally with compose v2 being available.
-
-```sh
-# v1 syntax
-docker-compose ...
-# v2 syntax
-docker compose ...
-```
-
-Copy `.env.example` to `.env` to get started & provide appropiate values
+Ensure `Docker` & `Docker-Compose` is installed locally with compose v2 available. Copy `.env.example` to `.env` to get started & fill in your own values
 
 ```sh
 cp .env.example .env
 ```
 
-Generate TLS cert for serving https locally. In production environment, mount your certificate in `cert` directory with proper name.
+In production environment, mount your certificates in `cert` directory, ensure proper name & path supplied in env. But for development, use below commands:
+
+Generate TLS cert for serving https locally.
 
 ```sh
 make tls
 ```
 
-Generate ECDSA public-private key pair for JWT Auth locally. In production environment, mount your keys in `cert` directory with proper name.
+Generate ECDSA public-private key pair for JWT Auth locally.
 
 ```sh
 make jwt
@@ -121,7 +114,7 @@ make db-create f=<filename>
 
 ## Building Binaries
 
-use below command to build binaries targetted towards supported `os` & `architechture`
+use below command to build binaries targetted towards supported `os` & `architechture` . A github workflow file is also included
 
 ```sh
 os=<OPERATING SYSTEM> arch=<ARCHITECHTURE> make build-release
