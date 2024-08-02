@@ -17,6 +17,7 @@ type Server struct {
 	WriteTimeout time.Duration `split_words:"true" default:"10s"`
 	TLSCertPath  string        `split_words:"true" required:"true"`
 	TLSKeyPath   string        `split_words:"true" required:"true"`
+	GenRouteDocs bool          `split_words:"true" default:"false"`
 }
 
 func serverConfig() Server {

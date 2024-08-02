@@ -46,6 +46,10 @@ func NewServer(c *config.Config, db *db.Postgres, l *slog.Logger) *Server {
 
 	server.routes()
 
+	if c.GenRouteDocs {
+		server.generateRouteDocs()
+	}
+
 	return server
 }
 

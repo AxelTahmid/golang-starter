@@ -4,6 +4,7 @@ go 1.22
 
 require (
 	github.com/go-chi/chi/v5 v5.1.0
+	github.com/go-chi/docgen v1.3.0
 	github.com/go-playground/validator/v10 v10.22.0
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/jackc/pgerrcode v0.0.0-20240316143900-6e2875d9b438
