@@ -1,3 +1,5 @@
+.PHONY: build
+
 # # Load all values from .env and export them, within makefile commands
 # ifneq (,$(wildcard ./.env))
 #     include .env
@@ -7,8 +9,10 @@
 deps:
 	go mod download
 	go mod verify
+
 deps-upgrade: 
 	go get -u -t -d -v ./...
+
 deps-cleancache: 
 	go clean -modcache
 
@@ -18,17 +22,29 @@ tidy:
 run: 
 	go run ./cmd/golang-starter/main.go
 
-build-dev: 
-	docker compose up -d --build --no-cache
-
-build-release: 
+build: 
+	@if [ -z "$(os)" ] || [ -z "$(arch)" ]; then \
+		echo "Error: Both 'os' and 'arch' variables must be set. Please use 'make build os=<value> arch=<value>'"; \
+		exit 1; \
+	fi
 	CGO_ENABLED=0 GOOS=$(os) GOARCH=$(arch) go build -o ./bin/main ./cmd/golang-starter/main.go
 
 up:
+	@if [ ! -f .env ]; then \
+        cp .env.example .env; \
+    fi
 	docker compose up -d
 
 down:
 	docker compose down
+
+fresh:
+	@if [ ! -f .env ]; then \
+        cp .env.example .env; \
+    fi
+	docker compose down --remove-orphans
+	docker compose build --no-cache
+	docker compose up -d --build -V
 
 dev: tidy down up log
 
@@ -45,23 +61,27 @@ log-db:
 db: 
 	docker compose --profile tools run --rm goose status
 # Migrate the DB to the most recent version available
-db-up: 
+migrate-up: 
 	docker compose --profile tools run --rm goose up
 # Roll back the version by 1
-db-down: 
+migrate-down: 
 	docker compose --profile tools run --rm goose down
 # Re-run the latest migration
-db-redo: 
+migrate-redo: 
 	docker compose --profile tools run --rm goose redo
 # Roll back all migrations
-db-reset: 
+migrate-fresh: 
 	docker compose --profile tools run --rm goose reset
 # Check migration files without running them
-db-validate: 
+migrate-validate: 
 	docker compose --profile tools run --rm goose validate
 # Creates new migration file with the current sequence 
-db-create: 
-	docker compose --profile tools run --rm goose create $(f) sql
+migrate-create:
+	@if [ -z "$(filename)" ]; then \
+		echo "Error: 'filename' variable must be set. Please use 'make migrate-create filename=<value>'"; \
+		exit 1; \
+	fi
+	docker compose --profile tools run --rm goose create $(filename) sql
 
 # self-seigned tls for local dev only
 tls:

@@ -97,19 +97,19 @@ make dev
 run migration of postgresql database, ensure `.env` values are correctly given
 
 ```sh
-make db-up
+make migrate-up
 ```
 
 revert migrations by 1 level
 
 ```sh
-make db-down
+make migrate-down
 ```
 
 create migration files
 
 ```sh
-make db-create f=<filename>
+make migrate-create f=<filename>
 ```
 
 ## Building Binaries
@@ -117,5 +117,5 @@ make db-create f=<filename>
 use below command to build binaries targetted towards supported `os` & `architechture` . A github workflow file is also included
 
 ```sh
-os=<OPERATING SYSTEM> arch=<ARCHITECHTURE> make build-release
+make build os=<OPERATING SYSTEM> arch=<ARCHITECHTURE>
 ```
