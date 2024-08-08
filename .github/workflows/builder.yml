@@ -58,7 +58,7 @@ jobs:
               run: make deps
 
             - name: Build Release Binary
-              run: os=${{env.PLATFORM_OS}} arch=${{env.PLATFORM_ARCHITECHTURE}} make build
+              run: make build os=${{env.PLATFORM_OS}} arch=${{env.PLATFORM_ARCHITECHTURE}}
 
             - name: Set up QEMU
               uses: docker/setup-qemu-action@v3

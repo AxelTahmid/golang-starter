@@ -6,7 +6,7 @@ tmp_dir = "tmp"
 # fsnotify is not working on compose - WSL2 (windows)
 poll = true
 
-cmd = "go build -o ./tmp/main  cmd/golang-starter/main.go"
+cmd = "go build -o ./tmp/main  cmd/main.go"
 bin = "./tmp/main"
 
 full_bin = "./tmp/main"

@@ -20,14 +20,14 @@ tidy:
 	go mod tidy
 
 run: 
-	go run ./cmd/golang-starter/main.go
+	go run ./cmd/main.go
 
 build: 
 	@if [ -z "$(os)" ] || [ -z "$(arch)" ]; then \
 		echo "Error: Both 'os' and 'arch' variables must be set. Please use 'make build os=<value> arch=<value>'"; \
 		exit 1; \
 	fi
-	CGO_ENABLED=0 GOOS=$(os) GOARCH=$(arch) go build -o ./bin/main ./cmd/golang-starter/main.go
+	CGO_ENABLED=0 GOOS=$(os) GOARCH=$(arch) go build -x -o ./bin/main ./cmd/main.go
 
 up:
 	@if [ ! -f .env ]; then \
@@ -45,6 +45,7 @@ fresh:
 	docker compose down --remove-orphans
 	docker compose build --no-cache
 	docker compose up -d --build -V
+	docker logs -f api
 
 dev: tidy down up log
 

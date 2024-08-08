@@ -20,9 +20,8 @@ The project follows below folder structure:
 ```go
 project-root/
     ├── cmd/
-    │   ├── <app-name>/
-    │   │   ├── main.go          # Application entry point
-    │   │   └── ...              # Other application-specific files
+    │   ├── main.go              # Server entrypoint
+    │   ├── ...                  # Other application entrypoints
     ├── cert/
     │   ├── ...                  # Certificates & Keys
     ├── config/
