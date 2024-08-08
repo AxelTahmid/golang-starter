@@ -60,21 +60,27 @@ log-db:
 ## Database migration scripts
 db: 
 	docker compose --profile tools run --rm goose status
+
 # Migrate the DB to the most recent version available
 migrate-up: 
 	docker compose --profile tools run --rm goose up
+
 # Roll back the version by 1
 migrate-down: 
 	docker compose --profile tools run --rm goose down
+
 # Re-run the latest migration
 migrate-redo: 
 	docker compose --profile tools run --rm goose redo
+
 # Roll back all migrations
 migrate-fresh: 
 	docker compose --profile tools run --rm goose reset
+
 # Check migration files without running them
 migrate-validate: 
 	docker compose --profile tools run --rm goose validate
+
 # Creates new migration file with the current sequence 
 migrate-create:
 	@if [ -z "$(filename)" ]; then \
@@ -94,6 +100,8 @@ jwt:
 	openssl ecparam -genkey -name prime256v1 -noout -out jwt-pvt.pem && \
 	openssl ec -in jwt-pvt.pem -pubout -out jwt-pub.pem
 
+lint: 
+	docker run -t --rm -v $(PWD):/app -w /app golangci/golangci-lint:v1.59-alpine golangci-lint run -v
+
 # WIP
-# lint: docker run -t --rm -v $(PWD):/app -w /app golangci/golangci-lint:v1.59-alpine golangci-lint run -vs
 # lint-cache: docker run --rm -v $(PWD):/app -v ~/.cache/golangci-lint/v1.59-alpine:/root/.cache -w /app golangci/golangci-lint:v1.59.1 golangci-lint run -v
