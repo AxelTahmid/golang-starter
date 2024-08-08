@@ -3,6 +3,7 @@ package api
 import (
 	"github.com/go-chi/chi/v5"
 	chiMiddleware "github.com/go-chi/chi/v5/middleware"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"github.com/AxelTahmid/golang-starter/api/middlewares"
 	"github.com/AxelTahmid/golang-starter/domain/auth"
@@ -19,6 +20,7 @@ func (s *Server) routes() {
 	s.router.Use(chiMiddleware.Heartbeat("/ping"))
 
 	// routes
+	s.router.Handle("/metrics", promhttp.Handler())
 	s.router.Route("/api/v1", func(r chi.Router) {
 		r.Mount("/auth", auth.Routes(s.db))
 	})
