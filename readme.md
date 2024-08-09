@@ -28,6 +28,9 @@ project-root/
     ├── config/
     │   ├── config.go            # Configuration logic
     │   └── ...
+    ├── docs/
+    │   ├── bruno/               # Bruno collection for exploring api
+    │   └── ...
     ├── db/
     │   ├── migrations/
     │   │   ├── *.sql            # Migrations files for goose
@@ -101,9 +104,11 @@ make dev
 
 n.b. In production environment, mount your certificates in `cert` directory, ensure proper name & path supplied in env.
 
-### Api Collection
+### Exploring APIs
 
-Download & Install `Bruno Api Client`. It is very lightweight, open-source IDE for APIs. Existing collections from postman, insomnia, openapi etc can be imported. Open the folder `docs/bruno` from the client & the collection will show up. Choose the environment `Local`.
+[Bruno](https://github.com/usebruno/bruno) is an Opensource IDE For Exploring and Testing Api's, lightweight alternative to postman/insomnia. Open Directory `docs/bruno` from the bruno app & the collection will show up. Choose the environment `Local`.
+
+Download & install bruno -> [click here](https://www.usebruno.com/downloads).
 
 ### Other Commands
 
