@@ -1,0 +1,26 @@
+meta {
+  name: register
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{base_url}}/api/v1/auth/register
+  body: json
+  auth: bearer
+}
+
+headers {
+  ~Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+      "email" : "axel.tahmid@gmail.com",
+      "password" : "axel1234"
+  }
+}
