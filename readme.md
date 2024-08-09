@@ -11,7 +11,8 @@ This is a monolithic http api starter with sane defaults. Features include:
 -   `golang-jwt/jwt/v5` - jwt Authentication
 -   `validator/v10` - incoming request payload validation
 -   `envconfig` - app configuration parsing & validation
--   `Makefile` commands for tooling
+-   `prometheus/promhttp` for default metrics
+-   `Makefile` commands for toolchain
 
 ## Folder Structure
 
@@ -58,27 +59,53 @@ project-root/
     └── README.md                # Project README
 ```
 
-## Get Started
+## Building Binaries
 
-Ensure `Docker` & `Docker-Compose` is installed locally with compose v2 available. Copy `.env.example` to `.env` to get started & fill in your own values
-
-```sh
-cp .env.example .env
-```
-
-In production environment, mount your certificates in `cert` directory, ensure proper name & path supplied in env. But for development, use below commands:
-
-Generate TLS cert for serving https locally.
+use below command to build binaries targetted towards supported `os` & `architechture` . A github workflow file is also included
 
 ```sh
-make tls
+make build os=<OPERATING SYSTEM> arch=<ARCHITECHTURE>
 ```
 
-Generate ECDSA public-private key pair for JWT Auth locally.
+## Get Started - Development
+
+### Environment
+
+Ensure following tools available in your machine
+
+-   Docker >= v27
+-   Docker Compose >=v2.29
+-   OpenSSL >= 1.1.1
+
+### Server
+
+To run the development server use below command:
 
 ```sh
-make jwt
+make init
 ```
+
+This command will
+
+-   Copy `.env.example` to `.env`, filling in default values
+-   Generate TLS cert for serving https locally.
+-   Generate ECDSA public-private key pair for JWT Auth locally.
+-   Start development server in hot reload mode
+-   Migrate database to latest migration
+
+After running above command for the first time, you should only start development server in hot reload mode using below command
+
+```sh
+make dev
+```
+
+n.b. In production environment, mount your certificates in `cert` directory, ensure proper name & path supplied in env.
+
+### Api Collection
+
+Download & Install `Bruno Api Client`. It is very lightweight, open-source IDE for APIs. Existing collections from postman, insomnia, openapi etc can be imported. Open the folder `docs/bruno` from the client & the collection will show up. Choose the environment `Local`.
+
+### Other Commands
 
 install & clean golang dependencies
 
@@ -111,10 +138,20 @@ create migration files
 make migrate-create f=<filename>
 ```
 
-## Building Binaries
-
-use below command to build binaries targetted towards supported `os` & `architechture` . A github workflow file is also included
+Generate TLS cert for serving https locally.
 
 ```sh
-make build os=<OPERATING SYSTEM> arch=<ARCHITECHTURE>
+make tls
+```
+
+Generate ECDSA public-private key pair for JWT Auth locally.
+
+```sh
+make jwt
+```
+
+Run linter
+
+```sh
+make lint
 ```

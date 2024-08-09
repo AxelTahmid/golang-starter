@@ -1,4 +1,4 @@
-.PHONY: build
+.PHONY: build init
 
 # # Load all values from .env and export them, within makefile commands
 # ifneq (,$(wildcard ./.env))
@@ -45,7 +45,19 @@ fresh:
 	docker compose down --remove-orphans
 	docker compose build --no-cache
 	docker compose up -d --build -V
-	docker logs -f api
+	make log
+
+init:
+	@if [ ! -f .env ]; then \
+        cp .env.example .env; \
+    fi
+	make tls
+	make jwt
+	docker compose down --remove-orphans
+	docker compose build --no-cache
+	docker compose up -d --build -V
+	make migrate-up
+	make log
 
 dev: tidy down up log
 
@@ -89,6 +101,15 @@ migrate-create:
 		exit 1; \
 	fi
 	docker compose --profile tools run --rm goose create $(filename) sql
+
+verify-openssl: 
+	openssl_minversion=1.1.1 \
+	@if echo -e "$(openssl version|awk '{print $2}')\n${openssl_minversion}" | sort -V | head -1 | grep -q ^${openssl_minversion}$;then \
+		echo "openssl - okay"; \
+	else \
+		echo "openssl not found or supported"; \
+		exit 1; \
+	fi
 
 # self-seigned tls for local dev only
 tls:
