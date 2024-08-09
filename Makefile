@@ -102,15 +102,6 @@ migrate-create:
 	fi
 	docker compose --profile tools run --rm goose create $(filename) sql
 
-verify-openssl: 
-	openssl_minversion=1.1.1 \
-	@if echo -e "$(openssl version|awk '{print $2}')\n${openssl_minversion}" | sort -V | head -1 | grep -q ^${openssl_minversion}$;then \
-		echo "openssl - okay"; \
-	else \
-		echo "openssl not found or supported"; \
-		exit 1; \
-	fi
-
 # self-seigned tls for local dev only
 tls:
 	cd ./cert && \
