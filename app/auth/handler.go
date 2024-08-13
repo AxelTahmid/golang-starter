@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/AxelTahmid/golang-starter/db"
 	"github.com/AxelTahmid/golang-starter/pkg/bcrypt"
 	"github.com/AxelTahmid/golang-starter/pkg/jwt"
 	"github.com/AxelTahmid/golang-starter/pkg/message"
@@ -31,7 +32,7 @@ func (a *Auth) login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fetchedUser, err := a.user.getOne(r.Context(), req.Email)
+	fetchedUser, err := a.db.User.GetByEmail(r.Context(), req.Email)
 	if err != nil {
 		reply.Status(http.StatusUnauthorized).WithErr(message.ErrPassOrUserIncorrect)
 		return
@@ -62,7 +63,7 @@ func (a *Auth) login(w http.ResponseWriter, r *http.Request) {
 func (a *Auth) register(w http.ResponseWriter, r *http.Request) {
 	reply := respond.Write(&w)
 
-	var req RegisterRequest
+	var req db.InsertUser
 
 	err := request.DecodeJSON(w, r, &req)
 	if err != nil {
@@ -85,7 +86,7 @@ func (a *Auth) register(w http.ResponseWriter, r *http.Request) {
 	req.Email = strings.ToLower(req.Email)
 	req.Password = hash
 
-	err = a.user.insertOne(r.Context(), req)
+	err = a.db.User.InsertOne(r.Context(), req)
 	if err != nil {
 		reply.Status(http.StatusBadRequest).WithErr(err)
 		return
@@ -106,7 +107,7 @@ func (a *Auth) me(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fetchedUser, err := a.user.getOne(ctx, userClaim.Subject)
+	fetchedUser, err := a.db.User.GetByEmail(ctx, userClaim.Subject)
 	if err != nil {
 		reply.Status(http.StatusUnauthorized).WithErr(message.ErrNoRecord)
 		return
@@ -128,7 +129,7 @@ func (a *Auth) refresh(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fetchedUser, err := a.user.getOne(ctx, userClaim.Subject)
+	fetchedUser, err := a.db.User.GetByEmail(ctx, userClaim.Subject)
 	if err != nil {
 		reply.Status(http.StatusUnauthorized).WithErr(message.ErrNoRecord)
 		return

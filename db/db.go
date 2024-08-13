@@ -16,6 +16,7 @@ import (
 
 type Postgres struct {
 	pool *pgxpool.Pool
+	User
 }
 
 var (
@@ -71,16 +72,16 @@ func CreatePool(ctx context.Context, conf config.Database, logger *slog.Logger) 
 	return pg, err
 }
 
-func (pg *Postgres) Conn() *pgxpool.Pool {
-	return pg.pool
+func (p *Postgres) Conn() *pgxpool.Pool {
+	return p.pool
 }
 
-func (pg *Postgres) Ping(ctx context.Context) error {
-	return pg.pool.Ping(ctx)
+func (p *Postgres) Ping(ctx context.Context) error {
+	return p.pool.Ping(ctx)
 }
 
-func (pg *Postgres) Close() {
-	pg.pool.Close()
+func (p *Postgres) Close() {
+	p.pool.Close()
 }
 
 func setDbTimeZone(ctx context.Context, conn *pgx.Conn) error {
