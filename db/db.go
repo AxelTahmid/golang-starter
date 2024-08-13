@@ -15,12 +15,13 @@ import (
 )
 
 type Postgres struct {
-	db *pgxpool.Pool
+	pool *pgxpool.Pool
 }
 
 var (
-	pool       *Postgres
-	pgOnce     sync.Once
+	pg   *Postgres
+	once sync.Once
+
 	dbLogger   *slog.Logger
 	dbTimeZone string
 )
@@ -53,7 +54,7 @@ func getParsedConfig(conf config.Database) *pgxpool.Config {
 func CreatePool(ctx context.Context, conf config.Database, logger *slog.Logger) (*Postgres, error) {
 	var err error
 
-	pgOnce.Do(func() {
+	once.Do(func() {
 		dbLogger = logger
 		dbTimeZone = conf.TimeZone
 
@@ -62,22 +63,24 @@ func CreatePool(ctx context.Context, conf config.Database, logger *slog.Logger) 
 			err = dbErr
 		}
 
-		pool = &Postgres{dbPool}
+		pg = &Postgres{
+			pool: dbPool,
+		}
 	})
 
-	return pool, err
+	return pg, err
 }
 
 func (pg *Postgres) Conn() *pgxpool.Pool {
-	return pg.db
+	return pg.pool
 }
 
 func (pg *Postgres) Ping(ctx context.Context) error {
-	return pg.db.Ping(ctx)
+	return pg.pool.Ping(ctx)
 }
 
 func (pg *Postgres) Close() {
-	pg.db.Close()
+	pg.pool.Close()
 }
 
 func setDbTimeZone(ctx context.Context, conn *pgx.Conn) error {
