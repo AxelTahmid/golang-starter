@@ -20,43 +20,39 @@ The project follows below folder structure:
 
 ```go
 project-root/
-    ├── api/                     # API-related code (e.g., REST)
-    │   ├── middleware/
-    │   │   ├── middleware.go    # Middleware for HTTP requests
+    ├── api/                     # API-related code (e.g. REST)
+    │   ├── middleware/          # Middleware for HTTP requests
     │   │   └── ...
     │   ├── routes.go            # All Application routes
-    │   └── ...
+    │   └── server.go            # Server Setup
     ├── app/                     # Encapsulted Applicaton Logic
-    │   ├── <name>/
-    │   │   ├── mypackage.go
-    │   │   └── ...
+    │   ├── auth/
+    │   │   ├── handler.go       # Http handlers specific to auth
+    │   │   ├── router.go        # Http routes specific to auth
+    │   │   └── types.go         # Types routes specific to auth
+    │   └── ...                  # Other application logic folders
+    ├── cert/                    # Certificates & Keys
     │   └── ...
-    ├── cert/
-    │   ├── ...                  # Certificates & Keys
     ├── cmd/
     │   ├── main.go              # Server entrypoint
-    │   ├── ...                  # Other application entrypoints
-    ├── config/
-    │   ├── config.go            # Configuration logic
+    │   └── ...                  # Other application entrypoints
+    ├── config/                  # Configuration logic
+    │   ├── config.go
     │   └── ...
     ├── db/
-    │   ├── migrations/
-    │   │   ├── *.sql            # Migrations files for goose
-    │   │   ├── ...
-    │   ├── db.go                # Database setup and access
+    │   ├── migrations/          # Migrations files for goose
+    │   │   └── *.sql
+    │   ├── db.go                # Database connection setup
     │   ├── logger.go            # Database logger adapter
-    │   └── ...
-    ├── docs/
+    │   └── ...                  # Database model files
+    ├── docs/                    # Project documentations
     │   ├── bruno/               # Bruno collection for exploring api
+    │   │   └── ...
     │   └── ...
     ├── pkg/                     # Public, reusable packages
     │   ├── <name>/
-    │   │   ├── mypackage.go     # Public package code
-    │   │   └── ...
+    │   │   └── ...              # Public package code
     │   └── ...
-    ├── docs/                    # Project documentations
-    │   ├── bruno/               # Bruno Api Client for exploring
-    │   │   ├── ...
     ├── .gitignore               # Gitignore file
     ├── Makefile                 # Runnable Scripts
     ├── go.mod                   # Go module file
