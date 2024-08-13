@@ -12,7 +12,7 @@ import (
 	"github.com/AxelTahmid/golang-starter/pkg/validate"
 )
 
-func (handler AuthHandler) login(w http.ResponseWriter, r *http.Request) {
+func (a *Auth) login(w http.ResponseWriter, r *http.Request) {
 	reply := respond.Write(&w)
 
 	var req LoginRequest
@@ -25,13 +25,13 @@ func (handler AuthHandler) login(w http.ResponseWriter, r *http.Request) {
 
 	req.Email = strings.ToLower(req.Email)
 
-	validationErrs := validate.Check(handler.v, req)
+	validationErrs := validate.Check(a.validator, req)
 	if validationErrs != nil {
 		reply.Status(http.StatusBadRequest).WithErrs(validationErrs)
 		return
 	}
 
-	fetchedUser, err := handler.user.getOne(r.Context(), req.Email)
+	fetchedUser, err := a.user.getOne(r.Context(), req.Email)
 	if err != nil {
 		reply.Status(http.StatusUnauthorized).WithErr(message.ErrPassOrUserIncorrect)
 		return
@@ -59,7 +59,7 @@ func (handler AuthHandler) login(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func (handler AuthHandler) register(w http.ResponseWriter, r *http.Request) {
+func (a *Auth) register(w http.ResponseWriter, r *http.Request) {
 	reply := respond.Write(&w)
 
 	var req RegisterRequest
@@ -70,7 +70,7 @@ func (handler AuthHandler) register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	validationErrs := validate.Check(handler.v, req)
+	validationErrs := validate.Check(a.validator, req)
 	if validationErrs != nil {
 		reply.Status(http.StatusBadRequest).WithErrs(validationErrs)
 		return
@@ -85,7 +85,7 @@ func (handler AuthHandler) register(w http.ResponseWriter, r *http.Request) {
 	req.Email = strings.ToLower(req.Email)
 	req.Password = hash
 
-	err = handler.user.insertOne(r.Context(), req)
+	err = a.user.insertOne(r.Context(), req)
 	if err != nil {
 		reply.Status(http.StatusBadRequest).WithErr(err)
 		return
@@ -96,7 +96,7 @@ func (handler AuthHandler) register(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func (handler AuthHandler) me(w http.ResponseWriter, r *http.Request) {
+func (a *Auth) me(w http.ResponseWriter, r *http.Request) {
 	reply := respond.Write(&w)
 	ctx := r.Context()
 
@@ -106,7 +106,7 @@ func (handler AuthHandler) me(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fetchedUser, err := handler.user.getOne(ctx, userClaim.Subject)
+	fetchedUser, err := a.user.getOne(ctx, userClaim.Subject)
 	if err != nil {
 		reply.Status(http.StatusUnauthorized).WithErr(message.ErrNoRecord)
 		return
@@ -118,7 +118,7 @@ func (handler AuthHandler) me(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func (handler AuthHandler) refresh(w http.ResponseWriter, r *http.Request) {
+func (a *Auth) refresh(w http.ResponseWriter, r *http.Request) {
 	reply := respond.Write(&w)
 	ctx := r.Context()
 
@@ -128,7 +128,7 @@ func (handler AuthHandler) refresh(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fetchedUser, err := handler.user.getOne(ctx, userClaim.Subject)
+	fetchedUser, err := a.user.getOne(ctx, userClaim.Subject)
 	if err != nil {
 		reply.Status(http.StatusUnauthorized).WithErr(message.ErrNoRecord)
 		return

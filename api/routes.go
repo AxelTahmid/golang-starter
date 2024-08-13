@@ -6,7 +6,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"github.com/AxelTahmid/golang-starter/api/middlewares"
-	"github.com/AxelTahmid/golang-starter/domain/auth"
+	"github.com/AxelTahmid/golang-starter/app/auth"
 )
 
 func (s *Server) routes() {
