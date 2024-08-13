@@ -20,16 +20,24 @@ The project follows below folder structure:
 
 ```go
 project-root/
+    ├── api/                     # API-related code (e.g., REST)
+    │   ├── middleware/
+    │   │   ├── middleware.go    # Middleware for HTTP requests
+    │   │   └── ...
+    │   ├── routes.go            # All Application routes
+    │   └── ...
+    ├── app/                     # Encapsulted Applicaton Logic
+    │   ├── <name>/
+    │   │   ├── mypackage.go
+    │   │   └── ...
+    │   └── ...
+    ├── cert/
+    │   ├── ...                  # Certificates & Keys
     ├── cmd/
     │   ├── main.go              # Server entrypoint
     │   ├── ...                  # Other application entrypoints
-    ├── cert/
-    │   ├── ...                  # Certificates & Keys
     ├── config/
     │   ├── config.go            # Configuration logic
-    │   └── ...
-    ├── docs/
-    │   ├── bruno/               # Bruno collection for exploring api
     │   └── ...
     ├── db/
     │   ├── migrations/
@@ -38,23 +46,17 @@ project-root/
     │   ├── db.go                # Database setup and access
     │   ├── logger.go            # Database logger adapter
     │   └── ...
-    ├── api/                     # API-related code (e.g., REST)
-    │   ├── middleware/
-    │   │   ├── middleware.go    # Middleware for HTTP requests
-    │   │   └── ...
-    │   ├── routes.go            # All Application routes
+    ├── docs/
+    │   ├── bruno/               # Bruno collection for exploring api
     │   └── ...
     ├── pkg/                     # Public, reusable packages
     │   ├── <name>/
     │   │   ├── mypackage.go     # Public package code
     │   │   └── ...
     │   └── ...
-    ├── domain/                  # Encapsulted Applicaton Logic
-    │   ├── <nam>/
-    │   │   ├── mypackage.go
-    │   │   └── ...
-    │   └── ...
-    ├── docs/                    # Project documentation ( WIP )
+    ├── docs/                    # Project documentations
+    │   ├── bruno/               # Bruno Api Client for exploring
+    │   │   ├── ...
     ├── .gitignore               # Gitignore file
     ├── Makefile                 # Runnable Scripts
     ├── go.mod                   # Go module file
