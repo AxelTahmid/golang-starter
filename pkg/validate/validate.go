@@ -6,8 +6,9 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-func Check(v *validator.Validate, generic interface{}) []string {
-	err := v.Struct(generic)
+// an empty interface holds "any" type
+func Check(v *validator.Validate, data interface{}) []string {
+	err := v.Struct(data)
 	if err != nil {
 		// this check is only needed when your code could produce
 		// an invalid value for validation such as interface with nil
