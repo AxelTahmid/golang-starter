@@ -1,4 +1,4 @@
-package auth
+package db
 
 import (
 	"context"
@@ -9,14 +9,13 @@ import (
 	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
-	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 // exact order as in database
-type UserEntity struct {
+type User struct {
 	Id        int       `json:"id"`
 	Name      string    `json:"name"`
-	Email     string    `json:"email"`	
+	Email     string    `json:"email"`
 	Password  string    `json:"-"`
 	Verified  bool      `json:"verified"`
 	Role      string    `json:"role"`
@@ -29,32 +28,34 @@ const (
 	GetUserByEmailQuery = "SELECT * FROM users WHERE email = @userEmail;"
 )
 
-type UserModel struct {
-	pool *pgxpool.Pool
-}
-
-func (pg *UserModel) getOne(ctx context.Context, email string) (UserEntity, error) {
+func (u *User) GetByEmail(ctx context.Context, email string) (User, error) {
 	args := pgx.NamedArgs{
 		"userEmail": email,
 	}
 
 	row, err := pg.pool.Query(ctx, GetUserByEmailQuery, args)
 	if err != nil {
-		return UserEntity{}, fmt.Errorf("unable to query row: %w", err)
+		return User{}, fmt.Errorf("unable to query row: %w", err)
 	}
 
-	user, err := pgx.CollectOneRow(row, pgx.RowToStructByPos[UserEntity])
+	user, err := pgx.CollectOneRow(row, pgx.RowToStructByPos[User])
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return UserEntity{}, fmt.Errorf("user not found: %s", email)
+			return User{}, fmt.Errorf("user not found: %s", email)
 		}
-		return UserEntity{}, fmt.Errorf("unable to scan row: %w", err)
+		return User{}, fmt.Errorf("unable to scan row: %w", err)
 	}
 
 	return user, nil
 }
 
-func (pg *UserModel) insertOne(ctx context.Context, user RegisterRequest) error {
+type InsertUser struct {
+	Name     string `json:"name"`
+	Email    string `json:"email" validate:"required,email"`
+	Password string `json:"password" validate:"required,min=8"`
+}
+
+func (u *User) InsertOne(ctx context.Context, user InsertUser) error {
 	args := pgx.NamedArgs{
 		"userName":       user.Name,
 		"userEmail":      user.Email,

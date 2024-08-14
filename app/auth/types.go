@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"github.com/AxelTahmid/golang-starter/db"
 	"github.com/AxelTahmid/golang-starter/pkg/jwt"
 )
 
@@ -11,9 +12,7 @@ type (
 	}
 
 	RegisterRequest struct {
-		Name     string `json:"name"`
-		Email    string `json:"email" validate:"required,email"`
-		Password string `json:"password" validate:"required,min=8"`
+		db.InsertUser
 	}
 
 	LoginResponse struct {

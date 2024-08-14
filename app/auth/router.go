@@ -9,15 +9,15 @@ import (
 )
 
 type Auth struct {
-	user      UserModel
+	db        *db.Postgres
 	validator *validator.Validate
 }
 
-func Routes(pg *db.Postgres) chi.Router {
+func Routes(db *db.Postgres) chi.Router {
 	r := chi.NewRouter()
 
 	auth := &Auth{
-		user:      UserModel{pool: pg.Conn()},
+		db:        db,
 		validator: validator.New(),
 	}
 
