@@ -13,8 +13,8 @@ import (
 
 	"github.com/go-chi/chi/v5"
 
-	"github.com/AxelTahmid/golang-starter/config"
-	"github.com/AxelTahmid/golang-starter/db"
+	"github.com/AxelTahmid/tinker/config"
+	"github.com/AxelTahmid/tinker/db"
 )
 
 type Server struct {

@@ -1,8 +1,8 @@
 package auth
 
 import (
-	"github.com/AxelTahmid/golang-starter/db"
-	"github.com/AxelTahmid/golang-starter/pkg/jwt"
+	"github.com/AxelTahmid/tinker/db"
+	"github.com/AxelTahmid/tinker/pkg/jwt"
 )
 
 type (

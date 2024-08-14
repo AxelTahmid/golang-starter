@@ -1,4 +1,4 @@
-module github.com/AxelTahmid/golang-starter
+module github.com/AxelTahmid/tinker
 
 go 1.22
 

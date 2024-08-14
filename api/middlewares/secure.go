@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	"github.com/AxelTahmid/golang-starter/config"
+	"github.com/AxelTahmid/tinker/config"
 	"github.com/unrolled/secure"
 )
 

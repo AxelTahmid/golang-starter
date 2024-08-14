@@ -5,8 +5,8 @@ import (
 	chiMiddleware "github.com/go-chi/chi/v5/middleware"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
-	"github.com/AxelTahmid/golang-starter/api/middlewares"
-	"github.com/AxelTahmid/golang-starter/app/auth"
+	"github.com/AxelTahmid/tinker/api/middlewares"
+	"github.com/AxelTahmid/tinker/app/auth"
 )
 
 func (s *Server) routes() {

@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/AxelTahmid/golang-starter/config"
+	"github.com/AxelTahmid/tinker/config"
 	"github.com/golang-jwt/jwt/v5"
 )
 

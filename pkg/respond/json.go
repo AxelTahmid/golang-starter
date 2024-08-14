@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/AxelTahmid/golang-starter/pkg/message"
+	"github.com/AxelTahmid/tinker/pkg/message"
 )
 
 func (rw *Writer) WithJson(payload interface{}) {

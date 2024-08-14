@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/AxelTahmid/golang-starter/pkg/jwt"
-	"github.com/AxelTahmid/golang-starter/pkg/message"
-	"github.com/AxelTahmid/golang-starter/pkg/respond"
+	"github.com/AxelTahmid/tinker/pkg/jwt"
+	"github.com/AxelTahmid/tinker/pkg/message"
+	"github.com/AxelTahmid/tinker/pkg/respond"
 )
 
 func Authenticated(next http.Handler) http.Handler {
